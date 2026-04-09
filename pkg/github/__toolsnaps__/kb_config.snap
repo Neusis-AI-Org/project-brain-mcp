@@ -1,0 +1,17 @@
+{
+  "annotations": {
+    "readOnlyHint": true,
+    "title": "Get knowledge base config"
+  },
+  "description": "Read and parse the AGENTS.md knowledge base configuration from a GitHub repository. Call this first to understand the repo's knowledge base structure, rules, and agent permissions before using other KB tools.",
+  "inputSchema": {
+    "properties": {
+      "ref": {
+        "description": "Git ref (branch or tag). Defaults to the repository's default branch.",
+        "type": "string"
+      }
+    },
+    "type": "object"
+  },
+  "name": "kb_config"
+}

@@ -1,0 +1,52 @@
+{
+  "annotations": {
+    "title": "Write knowledge base document"
+  },
+  "description": "Create or update a knowledge base document in a GitHub repository. Automatically adds YAML frontmatter if not present. Validates the path against AGENTS.md structure rules.",
+  "inputSchema": {
+    "properties": {
+      "author": {
+        "description": "Author name for frontmatter",
+        "type": "string"
+      },
+      "branch": {
+        "description": "Branch to write to. Defaults to the repository's default branch.",
+        "type": "string"
+      },
+      "content": {
+        "description": "Document content in markdown format. Frontmatter will be auto-generated if not included.",
+        "type": "string"
+      },
+      "message": {
+        "description": "Commit message. If not provided, a default message will be generated.",
+        "type": "string"
+      },
+      "path": {
+        "description": "Path for the document (e.g., 'docs/architecture/auth-system.md'). Must be within a path defined in AGENTS.md structure.",
+        "type": "string"
+      },
+      "sha": {
+        "description": "SHA of the file being replaced (required for updates, not for new files)",
+        "type": "string"
+      },
+      "tags": {
+        "description": "Tags for the document",
+        "items": {
+          "type": "string"
+        },
+        "type": "array"
+      },
+      "title": {
+        "description": "Document title for frontmatter",
+        "type": "string"
+      }
+    },
+    "required": [
+      "path",
+      "title",
+      "content"
+    ],
+    "type": "object"
+  },
+  "name": "kb_write"
+}

@@ -74,6 +74,12 @@ type MCPServerConfig struct {
 
 	// Additional server options to apply
 	ServerOptions []MCPServerOption
+
+	// KBOwner is the default owner for knowledge base tools
+	KBOwner string
+
+	// KBRepo is the default repository for knowledge base tools
+	KBRepo string
 }
 
 type MCPServerOption func(*mcp.ServerOptions)
@@ -108,6 +114,14 @@ func NewMCPServer(ctx context.Context, cfg *MCPServerConfig, deps ToolDependenci
 	ghServer.AddReceivingMiddleware(middleware...)
 	ghServer.AddReceivingMiddleware(InjectDepsMiddleware(deps))
 	ghServer.AddReceivingMiddleware(addGitHubAPIErrorToContext)
+
+	// Inject KB defaults if configured
+	if cfg.KBOwner != "" && cfg.KBRepo != "" {
+		ghServer.AddReceivingMiddleware(InjectKBDefaultsMiddleware(KBDefaults{
+			Owner: cfg.KBOwner,
+			Repo:  cfg.KBRepo,
+		}))
+	}
 
 	if unrecognized := inv.UnrecognizedToolsets(); len(unrecognized) > 0 {
 		cfg.Logger.Warn("Warning: unrecognized toolsets ignored", "toolsets", strings.Join(unrecognized, ", "))

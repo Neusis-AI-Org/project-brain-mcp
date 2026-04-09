@@ -95,6 +95,8 @@ var (
 				InsidersMode:         viper.GetBool("insiders"),
 				ExcludeTools:         excludeTools,
 				RepoAccessCacheTTL:   &ttl,
+				KBOwner:              viper.GetString("kb-owner"),
+				KBRepo:               viper.GetString("kb-repo"),
 			}
 			return ghmcp.RunStdioServer(stdioServerConfig)
 		},
@@ -147,6 +149,8 @@ func init() {
 	rootCmd.PersistentFlags().Bool("lockdown-mode", false, "Enable lockdown mode")
 	rootCmd.PersistentFlags().Bool("insiders", false, "Enable insiders features")
 	rootCmd.PersistentFlags().Duration("repo-access-cache-ttl", 5*time.Minute, "Override the repo access cache TTL (e.g. 1m, 0s to disable)")
+	rootCmd.PersistentFlags().String("kb-owner", "", "Default repository owner for knowledge base tools")
+	rootCmd.PersistentFlags().String("kb-repo", "", "Default repository name for knowledge base tools")
 
 	// HTTP-specific flags
 	httpCmd.Flags().Int("port", 8082, "HTTP server port")
@@ -169,6 +173,8 @@ func init() {
 	_ = viper.BindPFlag("lockdown-mode", rootCmd.PersistentFlags().Lookup("lockdown-mode"))
 	_ = viper.BindPFlag("insiders", rootCmd.PersistentFlags().Lookup("insiders"))
 	_ = viper.BindPFlag("repo-access-cache-ttl", rootCmd.PersistentFlags().Lookup("repo-access-cache-ttl"))
+	_ = viper.BindPFlag("kb-owner", rootCmd.PersistentFlags().Lookup("kb-owner"))
+	_ = viper.BindPFlag("kb-repo", rootCmd.PersistentFlags().Lookup("kb-repo"))
 	_ = viper.BindPFlag("port", httpCmd.Flags().Lookup("port"))
 	_ = viper.BindPFlag("base-url", httpCmd.Flags().Lookup("base-url"))
 	_ = viper.BindPFlag("base-path", httpCmd.Flags().Lookup("base-path"))

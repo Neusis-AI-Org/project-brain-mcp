@@ -274,6 +274,13 @@ func AllTools(t translations.TranslationHelperFunc) []inventory.ServerTool {
 		GetLabelForLabelsToolset(t),
 		ListLabels(t),
 		LabelWrite(t),
+
+		// Knowledge base tools
+		KBConfigTool(t),
+		KBWriteTool(t),
+		KBListTool(t),
+		KBSearchTool(t),
+		KBInitTool(t),
 	}
 }
 

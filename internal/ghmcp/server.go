@@ -229,6 +229,12 @@ type StdioServerConfig struct {
 
 	// RepoAccessCacheTTL overrides the default TTL for repository access cache entries.
 	RepoAccessCacheTTL *time.Duration
+
+	// KBOwner is the default owner for knowledge base tools
+	KBOwner string
+
+	// KBRepo is the default repository for knowledge base tools
+	KBRepo string
 }
 
 // RunStdioServer is not concurrent safe.
@@ -271,6 +277,11 @@ func RunStdioServer(cfg StdioServerConfig) error {
 		logger.Debug("skipping scope filtering for non-PAT token")
 	}
 
+	// Validate that --kb-owner and --kb-repo are set when knowledge_base toolset is enabled
+	if kbToolsetEnabled(cfg.EnabledToolsets) && (cfg.KBOwner == "" || cfg.KBRepo == "") {
+		return fmt.Errorf("--kb-owner and --kb-repo are required when the knowledge_base toolset is enabled")
+	}
+
 	ghServer, err := NewStdioMCPServer(ctx, github.MCPServerConfig{
 		Version:           cfg.Version,
 		Host:              cfg.Host,
@@ -288,6 +299,8 @@ func RunStdioServer(cfg StdioServerConfig) error {
 		Logger:            logger,
 		RepoAccessTTL:     cfg.RepoAccessCacheTTL,
 		TokenScopes:       tokenScopes,
+		KBOwner:           cfg.KBOwner,
+		KBRepo:            cfg.KBRepo,
 	})
 	if err != nil {
 		return fmt.Errorf("failed to create MCP server: %w", err)
@@ -381,6 +394,16 @@ func addUserAgentsMiddleware(cfg github.MCPServerConfig, restClient *gogithub.Cl
 			return next(ctx, method, request)
 		}
 	}
+}
+
+// kbToolsetEnabled checks if the knowledge_base toolset is in the enabled list.
+func kbToolsetEnabled(enabledToolsets []string) bool {
+	for _, ts := range enabledToolsets {
+		if ts == "knowledge_base" {
+			return true
+		}
+	}
+	return false
 }
 
 // fetchTokenScopesForHost fetches the OAuth scopes for a token from the GitHub API.

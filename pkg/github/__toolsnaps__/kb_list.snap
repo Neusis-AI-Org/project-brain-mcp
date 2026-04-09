@@ -1,0 +1,25 @@
+{
+  "annotations": {
+    "readOnlyHint": true,
+    "title": "List knowledge base documents"
+  },
+  "description": "List knowledge base documents with their frontmatter metadata (title, date, author, tags). Supports filtering by folder, tags, and date range.",
+  "inputSchema": {
+    "properties": {
+      "path": {
+        "description": "Filter by directory path (e.g., 'docs/architecture'). Defaults to listing all KB paths from AGENTS.md.",
+        "type": "string"
+      },
+      "ref": {
+        "description": "Git ref (branch or tag). Defaults to the repository's default branch.",
+        "type": "string"
+      },
+      "tag": {
+        "description": "Filter documents by tag",
+        "type": "string"
+      }
+    },
+    "type": "object"
+  },
+  "name": "kb_list"
+}

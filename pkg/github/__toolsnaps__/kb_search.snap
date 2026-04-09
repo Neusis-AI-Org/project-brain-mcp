@@ -1,0 +1,28 @@
+{
+  "annotations": {
+    "readOnlyHint": true,
+    "title": "Search knowledge base"
+  },
+  "description": "Search across knowledge base documents by keyword. Returns matching documents with context lines and frontmatter metadata. Searches within the knowledge base paths defined in AGENTS.md.",
+  "inputSchema": {
+    "properties": {
+      "path": {
+        "description": "Optional: limit search to a specific KB directory (e.g., 'docs/architecture')",
+        "type": "string"
+      },
+      "query": {
+        "description": "Search query. Searches across document titles, tags, and content.",
+        "type": "string"
+      },
+      "ref": {
+        "description": "Git ref (branch or tag). Defaults to the repository's default branch.",
+        "type": "string"
+      }
+    },
+    "required": [
+      "query"
+    ],
+    "type": "object"
+  },
+  "name": "kb_search"
+}
