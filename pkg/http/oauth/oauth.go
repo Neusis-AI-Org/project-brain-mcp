@@ -84,6 +84,7 @@ var routePatterns = []string{
 	"/insiders", // Insiders mode
 	"/x/{toolset}",
 	"/x/{toolset}/readonly",
+	"/kb/{kbOwner}/{kbRepo}",
 }
 
 // RegisterRoutes registers the OAuth protected resource metadata routes.

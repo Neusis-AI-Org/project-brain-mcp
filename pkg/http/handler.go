@@ -153,6 +153,9 @@ func (h *Handler) RegisterRoutes(r chi.Router) {
 	r.With(withToolset, withReadonly).Mount("/x/{toolset}/readonly", h)
 	r.With(withToolset, withInsiders).Mount("/x/{toolset}/insiders", h)
 	r.With(withToolset, withReadonly, withInsiders).Mount("/x/{toolset}/readonly/insiders", h)
+
+	// KB repo routes — allows embedding kb-repo in the URL path
+	r.With(withKBRepo).Mount("/kb/{kbOwner}/{kbRepo}", h)
 }
 
 // withReadonly is middleware that sets readonly mode in the request context
@@ -168,6 +171,16 @@ func withToolset(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		toolset := chi.URLParam(r, "toolset")
 		ctx := ghcontext.WithToolsets(r.Context(), []string{toolset})
+		next.ServeHTTP(w, r.WithContext(ctx))
+	})
+}
+
+// withKBRepo is middleware that extracts the KB owner/repo from the URL and sets it in the request context
+func withKBRepo(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		owner := chi.URLParam(r, "kbOwner")
+		repo := chi.URLParam(r, "kbRepo")
+		ctx := ghcontext.WithKBRepo(r.Context(), owner+"/"+repo)
 		next.ServeHTTP(w, r.WithContext(ctx))
 	})
 }
