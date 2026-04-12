@@ -17,7 +17,8 @@ bin/
 .DS_Store
 
 # binary
-mcp-project-brain
+/mcp-project-brain
+/mcp-project-brain.exe
 mcpcurl
 e2e.test
 
