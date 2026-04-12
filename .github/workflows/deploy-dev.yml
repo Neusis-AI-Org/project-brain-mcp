@@ -1,0 +1,63 @@
+name: Deploy to Cloud Run (Dev)
+
+on:
+  push:
+    branches: [ak/brain-mcp-deploy]
+  workflow_dispatch:
+
+env:
+  PROJECT_ID: neusis-platform-dev
+  REGION: us-central1
+  SERVICE_NAME: brain-mcp
+  AR_REPO: brain-mcp
+  REGISTRY: us-central1-docker.pkg.dev
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+      id-token: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Authenticate to Google Cloud
+        uses: google-github-actions/auth@v2
+        with:
+          workload_identity_provider: ${{ secrets.GCP_WORKLOAD_IDENTITY_PROVIDER_DEV }}
+          service_account: ${{ secrets.GCP_SERVICE_ACCOUNT_DEV }}
+
+      - name: Set up Cloud SDK
+        uses: google-github-actions/setup-gcloud@v2
+
+      - name: Configure Docker for Artifact Registry
+        run: gcloud auth configure-docker "$REGISTRY" --quiet
+
+      - name: Build and push Docker image
+        run: |
+          IMAGE="$REGISTRY/$PROJECT_ID/$AR_REPO/$SERVICE_NAME:${{ github.sha }}"
+          docker build -t "$IMAGE" -t "$REGISTRY/$PROJECT_ID/$AR_REPO/$SERVICE_NAME:latest" .
+          docker push "$IMAGE"
+          docker push "$REGISTRY/$PROJECT_ID/$AR_REPO/$SERVICE_NAME:latest"
+          echo "IMAGE=$IMAGE" >> "$GITHUB_ENV"
+
+      - name: Deploy to Cloud Run
+        uses: google-github-actions/deploy-cloudrun@v2
+        with:
+          service: ${{ env.SERVICE_NAME }}
+          region: ${{ env.REGION }}
+          image: ${{ env.IMAGE }}
+          flags: |
+            --port=8082
+            --args=http,--toolsets=knowledge_base
+            --allow-unauthenticated
+            --set-secrets=GITHUB_PERSONAL_ACCESS_TOKEN=mcp-github-token:latest
+
+      - name: Output service URL
+        run: |
+          URL=$(gcloud run services describe "$SERVICE_NAME" --region="$REGION" --format="value(status.url)")
+          echo "## Deployed to Cloud Run (Dev)" >> "$GITHUB_STEP_SUMMARY"
+          echo "Service URL: $URL" >> "$GITHUB_STEP_SUMMARY"
