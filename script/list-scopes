@@ -16,9 +16,9 @@ set -e
 cd "$(dirname "$0")/.."
 
 # Build the server if it doesn't exist or is outdated
-if [ ! -f github-mcp-server ] || [ cmd/github-mcp-server/list_scopes.go -nt github-mcp-server ]; then
-    echo "Building github-mcp-server..." >&2
-    go build -o github-mcp-server ./cmd/github-mcp-server
+if [ ! -f mcp-project-brain ] || [ cmd/mcp-project-brain/list_scopes.go -nt mcp-project-brain ]; then
+    echo "Building mcp-project-brain..." >&2
+    go build -o mcp-project-brain ./cmd/mcp-project-brain
 fi
 
-exec ./github-mcp-server list-scopes "$@"
+exec ./mcp-project-brain list-scopes "$@"

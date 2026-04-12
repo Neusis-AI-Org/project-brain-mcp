@@ -37,10 +37,10 @@ jobs:
 
       - name: Build and push Docker image
         run: |
-          IMAGE="$REGISTRY/$PROJECT_ID/github-mcp-server/$SERVICE_NAME:${{ github.sha }}"
-          docker build -t "$IMAGE" -t "$REGISTRY/$PROJECT_ID/github-mcp-server/$SERVICE_NAME:latest" .
+          IMAGE="$REGISTRY/$PROJECT_ID/mcp-project-brain/$SERVICE_NAME:${{ github.sha }}"
+          docker build -t "$IMAGE" -t "$REGISTRY/$PROJECT_ID/mcp-project-brain/$SERVICE_NAME:latest" .
           docker push "$IMAGE"
-          docker push "$REGISTRY/$PROJECT_ID/github-mcp-server/$SERVICE_NAME:latest"
+          docker push "$REGISTRY/$PROJECT_ID/mcp-project-brain/$SERVICE_NAME:latest"
           echo "IMAGE=$IMAGE" >> "$GITHUB_ENV"
 
       - name: Deploy to Cloud Run

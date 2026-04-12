@@ -7,8 +7,8 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/github/github-mcp-server/pkg/http/headers"
-	"github.com/github/github-mcp-server/pkg/utils"
+	"github.com/Neusis-AI-Org/mcp-project-brain/pkg/http/headers"
+	"github.com/Neusis-AI-Org/mcp-project-brain/pkg/utils"
 	"github.com/go-chi/chi/v5"
 	"github.com/modelcontextprotocol/go-sdk/auth"
 	"github.com/modelcontextprotocol/go-sdk/oauthex"

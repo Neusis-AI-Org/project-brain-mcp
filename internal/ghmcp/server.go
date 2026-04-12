@@ -12,18 +12,18 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/github/github-mcp-server/pkg/errors"
-	"github.com/github/github-mcp-server/pkg/github"
-	"github.com/github/github-mcp-server/pkg/http/transport"
-	"github.com/github/github-mcp-server/pkg/inventory"
-	"github.com/github/github-mcp-server/pkg/lockdown"
-	mcplog "github.com/github/github-mcp-server/pkg/log"
-	"github.com/github/github-mcp-server/pkg/observability"
-	"github.com/github/github-mcp-server/pkg/observability/metrics"
-	"github.com/github/github-mcp-server/pkg/raw"
-	"github.com/github/github-mcp-server/pkg/scopes"
-	"github.com/github/github-mcp-server/pkg/translations"
-	"github.com/github/github-mcp-server/pkg/utils"
+	"github.com/Neusis-AI-Org/mcp-project-brain/pkg/errors"
+	"github.com/Neusis-AI-Org/mcp-project-brain/pkg/github"
+	"github.com/Neusis-AI-Org/mcp-project-brain/pkg/http/transport"
+	"github.com/Neusis-AI-Org/mcp-project-brain/pkg/inventory"
+	"github.com/Neusis-AI-Org/mcp-project-brain/pkg/lockdown"
+	mcplog "github.com/Neusis-AI-Org/mcp-project-brain/pkg/log"
+	"github.com/Neusis-AI-Org/mcp-project-brain/pkg/observability"
+	"github.com/Neusis-AI-Org/mcp-project-brain/pkg/observability/metrics"
+	"github.com/Neusis-AI-Org/mcp-project-brain/pkg/raw"
+	"github.com/Neusis-AI-Org/mcp-project-brain/pkg/scopes"
+	"github.com/Neusis-AI-Org/mcp-project-brain/pkg/translations"
+	"github.com/Neusis-AI-Org/mcp-project-brain/pkg/utils"
 	gogithub "github.com/google/go-github/v82/github"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 	"github.com/shurcooL/githubv4"
@@ -62,7 +62,7 @@ func createGitHubClients(cfg github.MCPServerConfig, apiHost utils.APIHostResolv
 
 	// Construct REST client
 	restClient := gogithub.NewClient(nil).WithAuthToken(cfg.Token)
-	restClient.UserAgent = fmt.Sprintf("github-mcp-server/%s", cfg.Version)
+	restClient.UserAgent = fmt.Sprintf("mcp-project-brain/%s", cfg.Version)
 	restClient.BaseURL = restURL
 	restClient.UploadURL = uploadURL
 
@@ -185,7 +185,7 @@ type StdioServerConfig struct {
 	Token string
 
 	// EnabledToolsets is a list of toolsets to enable
-	// See: https://github.com/github/github-mcp-server?tab=readme-ov-file#tool-configuration
+	// See: https://github.com/Neusis-AI-Org/mcp-project-brain?tab=readme-ov-file#tool-configuration
 	EnabledToolsets []string
 
 	// EnabledTools is a list of specific tools to enable (additive to toolsets)
@@ -197,14 +197,14 @@ type StdioServerConfig struct {
 	EnabledFeatures []string
 
 	// Whether to enable dynamic toolsets
-	// See: https://github.com/github/github-mcp-server?tab=readme-ov-file#dynamic-tool-discovery
+	// See: https://github.com/Neusis-AI-Org/mcp-project-brain?tab=readme-ov-file#dynamic-tool-discovery
 	DynamicToolsets bool
 
 	// ReadOnly indicates if we should only register read-only tools
 	ReadOnly bool
 
 	// ExportTranslations indicates if we should export translations
-	// See: https://github.com/github/github-mcp-server?tab=readme-ov-file#i18n--overriding-descriptions
+	// See: https://github.com/Neusis-AI-Org/mcp-project-brain?tab=readme-ov-file#i18n--overriding-descriptions
 	ExportTranslations bool
 
 	// EnableCommandLogging indicates if we should log commands
@@ -330,7 +330,7 @@ func RunStdioServer(cfg StdioServerConfig) error {
 		errC <- ghServer.Run(ctx, &mcp.IOTransport{Reader: in, Writer: out})
 	}()
 
-	// Output github-mcp-server string
+	// Output mcp-project-brain string
 	_, _ = fmt.Fprintf(os.Stderr, "GitHub MCP Server running on stdio\n")
 
 	// Wait for shutdown signal
@@ -375,7 +375,7 @@ func addUserAgentsMiddleware(cfg github.MCPServerConfig, restClient *gogithub.Cl
 
 			message := initializeRequest
 			userAgent := fmt.Sprintf(
-				"github-mcp-server/%s (%s/%s)",
+				"mcp-project-brain/%s (%s/%s)",
 				cfg.Version,
 				message.Params.ClientInfo.Name,
 				message.Params.ClientInfo.Version,

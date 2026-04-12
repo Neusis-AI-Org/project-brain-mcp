@@ -9,12 +9,12 @@ import (
 	"strings"
 	"time"
 
-	ghErrors "github.com/github/github-mcp-server/pkg/errors"
-	"github.com/github/github-mcp-server/pkg/inventory"
-	"github.com/github/github-mcp-server/pkg/sanitize"
-	"github.com/github/github-mcp-server/pkg/scopes"
-	"github.com/github/github-mcp-server/pkg/translations"
-	"github.com/github/github-mcp-server/pkg/utils"
+	ghErrors "github.com/Neusis-AI-Org/mcp-project-brain/pkg/errors"
+	"github.com/Neusis-AI-Org/mcp-project-brain/pkg/inventory"
+	"github.com/Neusis-AI-Org/mcp-project-brain/pkg/sanitize"
+	"github.com/Neusis-AI-Org/mcp-project-brain/pkg/scopes"
+	"github.com/Neusis-AI-Org/mcp-project-brain/pkg/translations"
+	"github.com/Neusis-AI-Org/mcp-project-brain/pkg/utils"
 	"github.com/google/go-github/v82/github"
 	"github.com/google/jsonschema-go/jsonschema"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
@@ -967,7 +967,7 @@ func SearchIssues(t translations.TranslationHelperFunc) inventory.ServerTool {
 
 // IssueWrite creates a tool to create a new or update an existing issue in a GitHub repository.
 // IssueWriteUIResourceURI is the URI for the issue_write tool's MCP App UI resource.
-const IssueWriteUIResourceURI = "ui://github-mcp-server/issue-write"
+const IssueWriteUIResourceURI = "ui://mcp-project-brain/issue-write"
 
 func IssueWrite(t translations.TranslationHelperFunc) inventory.ServerTool {
 	return NewTool(

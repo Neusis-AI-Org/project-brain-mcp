@@ -1,5 +1,5 @@
 version: 2
-project_name: github-mcp-server
+project_name: mcp-project-brain
 before:
   hooks:
     - go mod tidy
@@ -14,7 +14,7 @@ builds:
       - linux
       - windows
       - darwin
-    main: ./cmd/github-mcp-server
+    main: ./cmd/mcp-project-brain
 
 archives:
   - formats: tar.gz

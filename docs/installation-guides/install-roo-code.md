@@ -41,7 +41,7 @@ To customize toolsets, add server-side headers like `X-MCP-Toolsets` or `X-MCP-R
       "args": [
         "run", "-i", "--rm",
         "-e", "GITHUB_PERSONAL_ACCESS_TOKEN",
-        "ghcr.io/github/github-mcp-server"
+        "ghcr.io/github/mcp-project-brain"
       ],
       "env": {
         "GITHUB_PERSONAL_ACCESS_TOKEN": "YOUR_GITHUB_PAT"

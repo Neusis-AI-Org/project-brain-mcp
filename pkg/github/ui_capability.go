@@ -3,7 +3,7 @@ package github
 import (
 	"context"
 
-	ghcontext "github.com/github/github-mcp-server/pkg/context"
+	ghcontext "github.com/Neusis-AI-Org/mcp-project-brain/pkg/context"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 )
 

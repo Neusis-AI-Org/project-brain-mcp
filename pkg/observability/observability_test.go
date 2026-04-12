@@ -5,7 +5,7 @@ import (
 	"log/slog"
 	"testing"
 
-	"github.com/github/github-mcp-server/pkg/observability/metrics"
+	"github.com/Neusis-AI-Org/mcp-project-brain/pkg/observability/metrics"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )

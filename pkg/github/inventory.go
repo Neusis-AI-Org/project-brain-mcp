@@ -1,8 +1,8 @@
 package github
 
 import (
-	"github.com/github/github-mcp-server/pkg/inventory"
-	"github.com/github/github-mcp-server/pkg/translations"
+	"github.com/Neusis-AI-Org/mcp-project-brain/pkg/inventory"
+	"github.com/Neusis-AI-Org/mcp-project-brain/pkg/translations"
 )
 
 // NewInventory creates an Inventory with all available tools, resources, and prompts.

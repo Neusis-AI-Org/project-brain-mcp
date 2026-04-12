@@ -21,7 +21,7 @@ func TranslationHelper() (TranslationHelperFunc, func()) {
 	v := viper.New()
 
 	// Load from JSON file
-	v.SetConfigName("github-mcp-server-config")
+	v.SetConfigName("mcp-project-brain-config")
 	v.SetConfigType("json")
 	v.AddConfigPath(".")
 
@@ -56,9 +56,9 @@ func TranslationHelper() (TranslationHelperFunc, func()) {
 		}
 }
 
-// DumpTranslationKeyMap writes the translation map to a json file called github-mcp-server-config.json
+// DumpTranslationKeyMap writes the translation map to a json file called mcp-project-brain-config.json
 func DumpTranslationKeyMap(translationKeyMap map[string]string) error {
-	file, err := os.Create("github-mcp-server-config.json")
+	file, err := os.Create("mcp-project-brain-config.json")
 	if err != nil {
 		return fmt.Errorf("error creating file: %v", err)
 	}

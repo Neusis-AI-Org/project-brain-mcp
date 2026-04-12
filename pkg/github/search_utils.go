@@ -8,8 +8,8 @@ import (
 	"net/http"
 	"regexp"
 
-	ghErrors "github.com/github/github-mcp-server/pkg/errors"
-	"github.com/github/github-mcp-server/pkg/utils"
+	ghErrors "github.com/Neusis-AI-Org/mcp-project-brain/pkg/errors"
+	"github.com/Neusis-AI-Org/mcp-project-brain/pkg/utils"
 	"github.com/google/go-github/v82/github"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 )

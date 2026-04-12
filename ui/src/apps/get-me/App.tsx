@@ -141,7 +141,7 @@ function UserCard({ user }: { user: UserData }) {
 
 function GetMeApp() {
   const { error, toolResult } = useMcpApp({
-    appName: "github-mcp-server-get-me",
+    appName: "mcp-project-brain-get-me",
   });
 
   if (error) {

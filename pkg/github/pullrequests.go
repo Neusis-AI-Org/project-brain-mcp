@@ -13,13 +13,13 @@ import (
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 	"github.com/shurcooL/githubv4"
 
-	ghErrors "github.com/github/github-mcp-server/pkg/errors"
-	"github.com/github/github-mcp-server/pkg/inventory"
-	"github.com/github/github-mcp-server/pkg/octicons"
-	"github.com/github/github-mcp-server/pkg/sanitize"
-	"github.com/github/github-mcp-server/pkg/scopes"
-	"github.com/github/github-mcp-server/pkg/translations"
-	"github.com/github/github-mcp-server/pkg/utils"
+	ghErrors "github.com/Neusis-AI-Org/mcp-project-brain/pkg/errors"
+	"github.com/Neusis-AI-Org/mcp-project-brain/pkg/inventory"
+	"github.com/Neusis-AI-Org/mcp-project-brain/pkg/octicons"
+	"github.com/Neusis-AI-Org/mcp-project-brain/pkg/sanitize"
+	"github.com/Neusis-AI-Org/mcp-project-brain/pkg/scopes"
+	"github.com/Neusis-AI-Org/mcp-project-brain/pkg/translations"
+	"github.com/Neusis-AI-Org/mcp-project-brain/pkg/utils"
 )
 
 // PullRequestRead creates a tool to get details of a specific pull request.
@@ -532,7 +532,7 @@ func GetPullRequestReviews(ctx context.Context, client *github.Client, deps Tool
 }
 
 // PullRequestWriteUIResourceURI is the URI for the create_pull_request tool's MCP App UI resource.
-const PullRequestWriteUIResourceURI = "ui://github-mcp-server/pr-write"
+const PullRequestWriteUIResourceURI = "ui://mcp-project-brain/pr-write"
 
 // CreatePullRequest creates a tool to create a new pull request.
 func CreatePullRequest(t translations.TranslationHelperFunc) inventory.ServerTool {

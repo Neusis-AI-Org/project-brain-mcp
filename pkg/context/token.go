@@ -3,7 +3,7 @@ package context
 import (
 	"context"
 
-	"github.com/github/github-mcp-server/pkg/utils"
+	"github.com/Neusis-AI-Org/mcp-project-brain/pkg/utils"
 )
 
 type tokenCtxKey struct{}

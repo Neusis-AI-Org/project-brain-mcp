@@ -32,10 +32,10 @@ jobs:
         go-version-file: 'go.mod'
 
     - name: Build docs generator
-      run: go build -o github-mcp-server ./cmd/github-mcp-server
+      run: go build -o mcp-project-brain ./cmd/mcp-project-brain
 
     - name: Generate documentation
-      run: ./github-mcp-server generate-docs
+      run: ./mcp-project-brain generate-docs
 
     - name: Check for documentation changes
       run: |
@@ -45,7 +45,7 @@ jobs:
           echo "The generated documentation differs from what's committed."
           echo "Please run the following command to update the documentation:"
           echo ""
-          echo "  go run ./cmd/github-mcp-server generate-docs"
+          echo "  go run ./cmd/mcp-project-brain generate-docs"
           echo ""
           echo "Then commit the changes."
           echo ""

@@ -1,5 +1,5 @@
 .idea
-cmd/github-mcp-server/github-mcp-server
+cmd/mcp-project-brain/mcp-project-brain
 
 # VSCode
 .vscode/*
@@ -17,7 +17,7 @@ bin/
 .DS_Store
 
 # binary
-github-mcp-server
+mcp-project-brain
 mcpcurl
 e2e.test
 
@@ -35,3 +35,7 @@ pkg/github/ui_dist/*
 
 # OpenCode
 .opencode/
+
+# MCP client configs (may contain tokens/secrets)
+.mcp.json
+opencode.json

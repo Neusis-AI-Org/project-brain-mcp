@@ -6,8 +6,8 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	ghcontext "github.com/github/github-mcp-server/pkg/context"
-	"github.com/github/github-mcp-server/pkg/http/headers"
+	ghcontext "github.com/Neusis-AI-Org/mcp-project-brain/pkg/context"
+	"github.com/Neusis-AI-Org/mcp-project-brain/pkg/http/headers"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"

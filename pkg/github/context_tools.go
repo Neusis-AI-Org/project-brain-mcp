@@ -5,18 +5,18 @@ import (
 	"encoding/json"
 	"time"
 
-	ghErrors "github.com/github/github-mcp-server/pkg/errors"
-	"github.com/github/github-mcp-server/pkg/inventory"
-	"github.com/github/github-mcp-server/pkg/scopes"
-	"github.com/github/github-mcp-server/pkg/translations"
-	"github.com/github/github-mcp-server/pkg/utils"
+	ghErrors "github.com/Neusis-AI-Org/mcp-project-brain/pkg/errors"
+	"github.com/Neusis-AI-Org/mcp-project-brain/pkg/inventory"
+	"github.com/Neusis-AI-Org/mcp-project-brain/pkg/scopes"
+	"github.com/Neusis-AI-Org/mcp-project-brain/pkg/translations"
+	"github.com/Neusis-AI-Org/mcp-project-brain/pkg/utils"
 	"github.com/google/jsonschema-go/jsonschema"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 	"github.com/shurcooL/githubv4"
 )
 
 // GetMeUIResourceURI is the URI for the get_me tool's MCP App UI resource.
-const GetMeUIResourceURI = "ui://github-mcp-server/get-me"
+const GetMeUIResourceURI = "ui://mcp-project-brain/get-me"
 
 // UserDetails contains additional fields about a GitHub user not already
 // present in MinimalUser. Used by get_me context tool but omitted from search_users.

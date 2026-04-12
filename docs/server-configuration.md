@@ -15,7 +15,7 @@ We currently support the following ways in which the GitHub MCP Server can be co
 | Lockdown Mode | `X-MCP-Lockdown` header | `--lockdown-mode` flag or `GITHUB_LOCKDOWN_MODE` env var |
 | Insiders Mode | `X-MCP-Insiders` header or `/insiders` URL | `--insiders` flag or `GITHUB_INSIDERS` env var |
 | Scope Filtering | Always enabled | Always enabled |
-| Server Name/Title | Not available | `GITHUB_MCP_SERVER_NAME` / `GITHUB_MCP_SERVER_TITLE` env vars or `github-mcp-server-config.json` |
+| Server Name/Title | Not available | `GITHUB_MCP_SERVER_NAME` / `GITHUB_MCP_SERVER_TITLE` env vars or `mcp-project-brain-config.json` |
 
 > **Default behavior:** If you don't specify any configuration, the server uses the **default toolsets**: `context`, `issues`, `pull_requests`, `repos`, `users`.
 
@@ -65,7 +65,7 @@ The examples below use VS Code configuration format to illustrate the concepts. 
   "command": "go",
   "args": [
     "run",
-    "./cmd/github-mcp-server",
+    "./cmd/mcp-project-brain",
     "stdio",
     "--tools=get_file_contents,get_me,pull_request_read"
   ],
@@ -109,7 +109,7 @@ The examples below use VS Code configuration format to illustrate the concepts. 
   "command": "go",
   "args": [
     "run",
-    "./cmd/github-mcp-server",
+    "./cmd/mcp-project-brain",
     "stdio",
     "--toolsets=issues,pull_requests"
   ],
@@ -156,7 +156,7 @@ Enable entire toolsets, then add individual tools from toolsets you don't want f
   "command": "go",
   "args": [
     "run",
-    "./cmd/github-mcp-server",
+    "./cmd/mcp-project-brain",
     "stdio",
     "--toolsets=repos,issues",
     "--tools=get_gist,pull_request_read"
@@ -206,7 +206,7 @@ Listed tools are removed regardless of any other configuration — even if their
   "command": "go",
   "args": [
     "run",
-    "./cmd/github-mcp-server",
+    "./cmd/mcp-project-brain",
     "stdio",
     "--toolsets=pull_requests",
     "--exclude-tools=create_pull_request,merge_pull_request"
@@ -267,7 +267,7 @@ When active, this mode will disable all tools that are not read-only even if the
   "command": "go",
   "args": [
     "run",
-    "./cmd/github-mcp-server",
+    "./cmd/mcp-project-brain",
     "stdio",
     "--toolsets=issues,repos,pull_requests",
     "--read-only"
@@ -303,7 +303,7 @@ Starts with only discovery tools (`enable_toolset`, `list_available_toolsets`, `
   "command": "go",
   "args": [
     "run",
-    "./cmd/github-mcp-server",
+    "./cmd/mcp-project-brain",
     "stdio",
     "--dynamic-toolsets"
   ],
@@ -320,7 +320,7 @@ Starts with only discovery tools (`enable_toolset`, `list_available_toolsets`, `
   "command": "go",
   "args": [
     "run",
-    "./cmd/github-mcp-server",
+    "./cmd/mcp-project-brain",
     "stdio",
     "--dynamic-toolsets",
     "--tools=get_me,search_code"
@@ -370,7 +370,7 @@ Lockdown mode ensures the server only surfaces content in public repositories fr
   "command": "go",
   "args": [
     "run",
-    "./cmd/github-mcp-server",
+    "./cmd/mcp-project-brain",
     "stdio",
     "--lockdown-mode"
   ],
@@ -425,7 +425,7 @@ Insiders Mode unlocks experimental features, such as [MCP Apps](./insiders-featu
   "command": "go",
   "args": [
     "run",
-    "./cmd/github-mcp-server",
+    "./cmd/mcp-project-brain",
     "stdio",
     "--insiders"
   ],

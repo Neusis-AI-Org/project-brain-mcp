@@ -10,11 +10,11 @@ import (
 	"testing"
 	"time"
 
-	"github.com/github/github-mcp-server/pkg/lockdown"
-	"github.com/github/github-mcp-server/pkg/observability"
-	"github.com/github/github-mcp-server/pkg/observability/metrics"
-	"github.com/github/github-mcp-server/pkg/raw"
-	"github.com/github/github-mcp-server/pkg/translations"
+	"github.com/Neusis-AI-Org/mcp-project-brain/pkg/lockdown"
+	"github.com/Neusis-AI-Org/mcp-project-brain/pkg/observability"
+	"github.com/Neusis-AI-Org/mcp-project-brain/pkg/observability/metrics"
+	"github.com/Neusis-AI-Org/mcp-project-brain/pkg/raw"
+	"github.com/Neusis-AI-Org/mcp-project-brain/pkg/translations"
 	gogithub "github.com/google/go-github/v82/github"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 	"github.com/shurcooL/githubv4"
@@ -170,7 +170,7 @@ func TestNewMCPServer_CreatesSuccessfully(t *testing.T) {
 
 // TestNewServer_NameAndTitleViaTranslation verifies that server name and title
 // can be overridden via the translation helper (GITHUB_MCP_SERVER_NAME /
-// GITHUB_MCP_SERVER_TITLE env vars or github-mcp-server-config.json) and
+// GITHUB_MCP_SERVER_TITLE env vars or mcp-project-brain-config.json) and
 // fall back to sensible defaults when not overridden.
 func TestNewServer_NameAndTitleViaTranslation(t *testing.T) {
 	t.Parallel()
@@ -184,7 +184,7 @@ func TestNewServer_NameAndTitleViaTranslation(t *testing.T) {
 		{
 			name:          "defaults when using NullTranslationHelper",
 			translator:    translations.NullTranslationHelper,
-			expectedName:  "github-mcp-server",
+			expectedName:  "mcp-project-brain",
 			expectedTitle: "GitHub MCP Server",
 		},
 		{
@@ -219,7 +219,7 @@ func TestNewServer_NameAndTitleViaTranslation(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
 
-			srv := NewServer("v1.0.0", tt.translator("SERVER_NAME", "github-mcp-server"), tt.translator("SERVER_TITLE", "GitHub MCP Server"), nil)
+			srv := NewServer("v1.0.0", tt.translator("SERVER_NAME", "mcp-project-brain"), tt.translator("SERVER_TITLE", "GitHub MCP Server"), nil)
 			require.NotNil(t, srv)
 
 			// Connect a client to retrieve the initialize result and verify ServerInfo.

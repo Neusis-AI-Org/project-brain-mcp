@@ -8,11 +8,11 @@ import (
 	"strings"
 	"time"
 
-	gherrors "github.com/github/github-mcp-server/pkg/errors"
-	"github.com/github/github-mcp-server/pkg/inventory"
-	"github.com/github/github-mcp-server/pkg/octicons"
-	"github.com/github/github-mcp-server/pkg/translations"
-	"github.com/github/github-mcp-server/pkg/utils"
+	gherrors "github.com/Neusis-AI-Org/mcp-project-brain/pkg/errors"
+	"github.com/Neusis-AI-Org/mcp-project-brain/pkg/inventory"
+	"github.com/Neusis-AI-Org/mcp-project-brain/pkg/octicons"
+	"github.com/Neusis-AI-Org/mcp-project-brain/pkg/translations"
+	"github.com/Neusis-AI-Org/mcp-project-brain/pkg/utils"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 )
 
@@ -27,7 +27,7 @@ type MCPServerConfig struct {
 	Token string
 
 	// EnabledToolsets is a list of toolsets to enable
-	// See: https://github.com/github/github-mcp-server?tab=readme-ov-file#tool-configuration
+	// See: https://github.com/Neusis-AI-Org/mcp-project-brain?tab=readme-ov-file#tool-configuration
 	EnabledToolsets []string
 
 	// EnabledTools is a list of specific tools to enable (additive to toolsets)
@@ -39,7 +39,7 @@ type MCPServerConfig struct {
 	EnabledFeatures []string
 
 	// Whether to enable dynamic toolsets
-	// See: https://github.com/github/github-mcp-server?tab=readme-ov-file#dynamic-tool-discovery
+	// See: https://github.com/Neusis-AI-Org/mcp-project-brain?tab=readme-ov-file#dynamic-tool-discovery
 	DynamicToolsets bool
 
 	// ReadOnly indicates if we should only offer read-only tools
@@ -107,7 +107,7 @@ func NewMCPServer(ctx context.Context, cfg *MCPServerConfig, deps ToolDependenci
 		}
 	}
 
-	ghServer := NewServer(cfg.Version, cfg.Translator("SERVER_NAME", "github-mcp-server"), cfg.Translator("SERVER_TITLE", "GitHub MCP Server"), serverOpts)
+	ghServer := NewServer(cfg.Version, cfg.Translator("SERVER_NAME", "mcp-project-brain"), cfg.Translator("SERVER_TITLE", "GitHub MCP Server"), serverOpts)
 
 	// Add middlewares. Order matters - for example, the error context middleware should be applied last so that it runs FIRST (closest to the handler) to ensure all errors are captured,
 	// and any middleware that needs to read or modify the context should be before it.
@@ -192,14 +192,14 @@ func addGitHubAPIErrorToContext(next mcp.MethodHandler) mcp.MethodHandler {
 
 // NewServer creates a new GitHub MCP server with the given version, server
 // name, display title, and options. If name or title are empty the defaults
-// "github-mcp-server" and "GitHub MCP Server" are used.
+// "mcp-project-brain" and "GitHub MCP Server" are used.
 func NewServer(version, name, title string, opts *mcp.ServerOptions) *mcp.Server {
 	if opts == nil {
 		opts = &mcp.ServerOptions{}
 	}
 
 	if name == "" {
-		name = "github-mcp-server"
+		name = "mcp-project-brain"
 	}
 	if title == "" {
 		title = "GitHub MCP Server"

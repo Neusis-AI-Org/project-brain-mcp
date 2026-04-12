@@ -8,16 +8,16 @@ import (
 	"net/http"
 	"os"
 
-	ghcontext "github.com/github/github-mcp-server/pkg/context"
-	"github.com/github/github-mcp-server/pkg/http/transport"
-	"github.com/github/github-mcp-server/pkg/inventory"
-	"github.com/github/github-mcp-server/pkg/lockdown"
-	"github.com/github/github-mcp-server/pkg/observability"
-	"github.com/github/github-mcp-server/pkg/observability/metrics"
-	"github.com/github/github-mcp-server/pkg/raw"
-	"github.com/github/github-mcp-server/pkg/scopes"
-	"github.com/github/github-mcp-server/pkg/translations"
-	"github.com/github/github-mcp-server/pkg/utils"
+	ghcontext "github.com/Neusis-AI-Org/mcp-project-brain/pkg/context"
+	"github.com/Neusis-AI-Org/mcp-project-brain/pkg/http/transport"
+	"github.com/Neusis-AI-Org/mcp-project-brain/pkg/inventory"
+	"github.com/Neusis-AI-Org/mcp-project-brain/pkg/lockdown"
+	"github.com/Neusis-AI-Org/mcp-project-brain/pkg/observability"
+	"github.com/Neusis-AI-Org/mcp-project-brain/pkg/observability/metrics"
+	"github.com/Neusis-AI-Org/mcp-project-brain/pkg/raw"
+	"github.com/Neusis-AI-Org/mcp-project-brain/pkg/scopes"
+	"github.com/Neusis-AI-Org/mcp-project-brain/pkg/translations"
+	"github.com/Neusis-AI-Org/mcp-project-brain/pkg/utils"
 	gogithub "github.com/google/go-github/v82/github"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 	"github.com/shurcooL/githubv4"
@@ -321,7 +321,7 @@ func (d *RequestDeps) GetClient(ctx context.Context) (*gogithub.Client, error) {
 
 	// Construct REST client
 	restClient := gogithub.NewClient(nil).WithAuthToken(token)
-	restClient.UserAgent = fmt.Sprintf("github-mcp-server/%s", d.version)
+	restClient.UserAgent = fmt.Sprintf("mcp-project-brain/%s", d.version)
 	restClient.BaseURL = baseRestURL
 	restClient.UploadURL = uploadURL
 	return restClient, nil

@@ -3,7 +3,7 @@ package github
 import (
 	"testing"
 
-	"github.com/github/github-mcp-server/pkg/octicons"
+	"github.com/Neusis-AI-Org/mcp-project-brain/pkg/octicons"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )

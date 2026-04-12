@@ -1,4 +1,4 @@
-[![Go Report Card](https://goreportcard.com/badge/github.com/github/github-mcp-server)](https://goreportcard.com/report/github.com/github/github-mcp-server)
+[![Go Report Card](https://goreportcard.com/badge/github.com/github/mcp-project-brain)](https://goreportcard.com/report/github.com/github/mcp-project-brain)
 
 # GitHub MCP Server
 
@@ -20,12 +20,12 @@ Built for developers who want to connect their AI tools to GitHub context and ca
 
 [![Install in VS Code](https://img.shields.io/badge/VS_Code-Install_Server-0098FF?style=flat-square&logo=visualstudiocode&logoColor=white)](https://insiders.vscode.dev/redirect/mcp/install?name=github&config=%7B%22type%22%3A%20%22http%22%2C%22url%22%3A%20%22https%3A%2F%2Fapi.githubcopilot.com%2Fmcp%2F%22%7D) [![Install in VS Code Insiders](https://img.shields.io/badge/VS_Code_Insiders-Install_Server-24bfa5?style=flat-square&logo=visualstudiocode&logoColor=white)](https://insiders.vscode.dev/redirect/mcp/install?name=github&config=%7B%22type%22%3A%20%22http%22%2C%22url%22%3A%20%22https%3A%2F%2Fapi.githubcopilot.com%2Fmcp%2F%22%7D&quality=insiders)
 
-The remote GitHub MCP Server is hosted by GitHub and provides the easiest method for getting up and running. If your MCP host does not support remote MCP servers, don't worry! You can use the [local version of the GitHub MCP Server](https://github.com/github/github-mcp-server?tab=readme-ov-file#local-github-mcp-server) instead.
+The remote GitHub MCP Server is hosted by GitHub and provides the easiest method for getting up and running. If your MCP host does not support remote MCP servers, don't worry! You can use the [local version of the GitHub MCP Server](https://github.com/github/mcp-project-brain?tab=readme-ov-file#local-mcp-project-brain) instead.
 
 ### Prerequisites
 
 1. A compatible MCP host with remote server support (VS Code 1.101+, Claude Desktop, Cursor, Windsurf, etc.)
-2. Any applicable [policies enabled](https://github.com/github/github-mcp-server/blob/main/docs/policies-and-governance.md)
+2. Any applicable [policies enabled](https://github.com/github/mcp-project-brain/blob/main/docs/policies-and-governance.md)
 
 ### Install in VS Code
 
@@ -174,12 +174,12 @@ GitHub Enterprise Server does not support remote server hosting. Please refer to
 
 ## Local GitHub MCP Server
 
-[![Install with Docker in VS Code](https://img.shields.io/badge/VS_Code-Install_Server-0098FF?style=flat-square&logo=visualstudiocode&logoColor=white)](https://insiders.vscode.dev/redirect/mcp/install?name=github&inputs=%5B%7B%22id%22%3A%22github_token%22%2C%22type%22%3A%22promptString%22%2C%22description%22%3A%22GitHub%20Personal%20Access%20Token%22%2C%22password%22%3Atrue%7D%5D&config=%7B%22command%22%3A%22docker%22%2C%22args%22%3A%5B%22run%22%2C%22-i%22%2C%22--rm%22%2C%22-e%22%2C%22GITHUB_PERSONAL_ACCESS_TOKEN%22%2C%22ghcr.io%2Fgithub%2Fgithub-mcp-server%22%5D%2C%22env%22%3A%7B%22GITHUB_PERSONAL_ACCESS_TOKEN%22%3A%22%24%7Binput%3Agithub_token%7D%22%7D%7D) [![Install with Docker in VS Code Insiders](https://img.shields.io/badge/VS_Code_Insiders-Install_Server-24bfa5?style=flat-square&logo=visualstudiocode&logoColor=white)](https://insiders.vscode.dev/redirect/mcp/install?name=github&inputs=%5B%7B%22id%22%3A%22github_token%22%2C%22type%22%3A%22promptString%22%2C%22description%22%3A%22GitHub%20Personal%20Access%20Token%22%2C%22password%22%3Atrue%7D%5D&config=%7B%22command%22%3A%22docker%22%2C%22args%22%3A%5B%22run%22%2C%22-i%22%2C%22--rm%22%2C%22-e%22%2C%22GITHUB_PERSONAL_ACCESS_TOKEN%22%2C%22ghcr.io%2Fgithub%2Fgithub-mcp-server%22%5D%2C%22env%22%3A%7B%22GITHUB_PERSONAL_ACCESS_TOKEN%22%3A%22%24%7Binput%3Agithub_token%7D%22%7D%7D&quality=insiders)
+[![Install with Docker in VS Code](https://img.shields.io/badge/VS_Code-Install_Server-0098FF?style=flat-square&logo=visualstudiocode&logoColor=white)](https://insiders.vscode.dev/redirect/mcp/install?name=github&inputs=%5B%7B%22id%22%3A%22github_token%22%2C%22type%22%3A%22promptString%22%2C%22description%22%3A%22GitHub%20Personal%20Access%20Token%22%2C%22password%22%3Atrue%7D%5D&config=%7B%22command%22%3A%22docker%22%2C%22args%22%3A%5B%22run%22%2C%22-i%22%2C%22--rm%22%2C%22-e%22%2C%22GITHUB_PERSONAL_ACCESS_TOKEN%22%2C%22ghcr.io%2Fgithub%2Fmcp-project-brain%22%5D%2C%22env%22%3A%7B%22GITHUB_PERSONAL_ACCESS_TOKEN%22%3A%22%24%7Binput%3Agithub_token%7D%22%7D%7D) [![Install with Docker in VS Code Insiders](https://img.shields.io/badge/VS_Code_Insiders-Install_Server-24bfa5?style=flat-square&logo=visualstudiocode&logoColor=white)](https://insiders.vscode.dev/redirect/mcp/install?name=github&inputs=%5B%7B%22id%22%3A%22github_token%22%2C%22type%22%3A%22promptString%22%2C%22description%22%3A%22GitHub%20Personal%20Access%20Token%22%2C%22password%22%3Atrue%7D%5D&config=%7B%22command%22%3A%22docker%22%2C%22args%22%3A%5B%22run%22%2C%22-i%22%2C%22--rm%22%2C%22-e%22%2C%22GITHUB_PERSONAL_ACCESS_TOKEN%22%2C%22ghcr.io%2Fgithub%2Fmcp-project-brain%22%5D%2C%22env%22%3A%7B%22GITHUB_PERSONAL_ACCESS_TOKEN%22%3A%22%24%7Binput%3Agithub_token%7D%22%7D%7D&quality=insiders)
 
 ### Prerequisites
 
 1. To run the server in a container, you will need to have [Docker](https://www.docker.com/) installed.
-2. Once Docker is installed, you will also need to ensure Docker is running. The Docker image is available at `ghcr.io/github/github-mcp-server`. The image is public; if you get errors on pull, you may have an expired token and need to `docker logout ghcr.io`.
+2. Once Docker is installed, you will also need to ensure Docker is running. The Docker image is available at `ghcr.io/github/mcp-project-brain`. The image is public; if you get errors on pull, you may have an expired token and need to `docker logout ghcr.io`.
 3. Lastly you will need to [Create a GitHub Personal Access Token](https://github.com/settings/personal-access-tokens/new).
 The MCP server can use many of the GitHub APIs, so enable the permissions that you feel comfortable granting your AI tools (to learn more about access tokens, please check out the [documentation](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens)).
 
@@ -258,7 +258,7 @@ the hostname for GitHub Enterprise Server or GitHub Enterprise Cloud with data r
     "GITHUB_PERSONAL_ACCESS_TOKEN",
     "-e",
     "GITHUB_HOST",
-    "ghcr.io/github/github-mcp-server"
+    "ghcr.io/github/mcp-project-brain"
     ],
     "env": {
         "GITHUB_PERSONAL_ACCESS_TOKEN": "${input:github_token}",
@@ -299,7 +299,7 @@ Add the following JSON block to your IDE's MCP settings.
           "--rm",
           "-e",
           "GITHUB_PERSONAL_ACCESS_TOKEN",
-          "ghcr.io/github/github-mcp-server"
+          "ghcr.io/github/mcp-project-brain"
         ],
         "env": {
           "GITHUB_PERSONAL_ACCESS_TOKEN": "${input:github_token}"
@@ -335,7 +335,7 @@ Optionally, you can add a similar example (i.e. without the mcp key) to a file c
         "--rm",
         "-e",
         "GITHUB_PERSONAL_ACCESS_TOKEN",
-        "ghcr.io/github/github-mcp-server"
+        "ghcr.io/github/mcp-project-brain"
       ],
       "env": {
         "GITHUB_PERSONAL_ACCESS_TOKEN": "${input:github_token}"
@@ -365,14 +365,14 @@ For a complete overview of all installation options, see our **[Installation Gui
 ### Build from source
 
 If you don't have Docker, you can use `go build` to build the binary in the
-`cmd/github-mcp-server` directory, and use the `github-mcp-server stdio` command with the `GITHUB_PERSONAL_ACCESS_TOKEN` environment variable set to your token. To specify the output location of the build, use the `-o` flag. You should configure your server to use the built executable as its `command`. For example:
+`cmd/mcp-project-brain` directory, and use the `mcp-project-brain stdio` command with the `GITHUB_PERSONAL_ACCESS_TOKEN` environment variable set to your token. To specify the output location of the build, use the `-o` flag. You should configure your server to use the built executable as its `command`. For example:
 
 ```JSON
 {
   "mcp": {
     "servers": {
       "github": {
-        "command": "/path/to/github-mcp-server",
+        "command": "/path/to/mcp-project-brain",
         "args": ["stdio"],
         "env": {
           "GITHUB_PERSONAL_ACCESS_TOKEN": "<YOUR_TOKEN>"
@@ -385,13 +385,13 @@ If you don't have Docker, you can use `go build` to build the binary in the
 
 ### CLI utilities
 
-The `github-mcp-server` binary includes a few CLI subcommands that are helpful for debugging and exploring the server.
+The `mcp-project-brain` binary includes a few CLI subcommands that are helpful for debugging and exploring the server.
 
-- `github-mcp-server tool-search "<query>"` searches tools by name, description, and input parameter names. Use `--max-results` to return more matches.
+- `mcp-project-brain tool-search "<query>"` searches tools by name, description, and input parameter names. Use `--max-results` to return more matches.
 Example (color output requires a TTY; use `docker run -t` (or `-it`) when running in Docker):
 ```bash
-docker run -it --rm ghcr.io/github/github-mcp-server tool-search "issue" --max-results 5
-github-mcp-server tool-search "issue" --max-results 5
+docker run -it --rm ghcr.io/github/mcp-project-brain tool-search "issue" --max-results 5
+mcp-project-brain tool-search "issue" --max-results 5
 ```
 
 ## Tool Configuration
@@ -411,13 +411,13 @@ To specify toolsets you want available to the LLM, you can pass an allow-list in
 1. **Using Command Line Argument**:
 
    ```bash
-   github-mcp-server --toolsets repos,issues,pull_requests,actions,code_security
+   mcp-project-brain --toolsets repos,issues,pull_requests,actions,code_security
    ```
 
 2. **Using Environment Variable**:
 
    ```bash
-   GITHUB_TOOLSETS="repos,issues,pull_requests,actions,code_security" ./github-mcp-server
+   GITHUB_TOOLSETS="repos,issues,pull_requests,actions,code_security" ./mcp-project-brain
    ```
 
 The environment variable `GITHUB_TOOLSETS` takes precedence over the command line argument if both are provided.
@@ -429,19 +429,19 @@ You can also configure specific tools using the `--tools` flag. Tools can be use
 1. **Using Command Line Argument**:
 
    ```bash
-   github-mcp-server --tools get_file_contents,issue_read,create_pull_request
+   mcp-project-brain --tools get_file_contents,issue_read,create_pull_request
    ```
 
 2. **Using Environment Variable**:
 
    ```bash
-   GITHUB_TOOLS="get_file_contents,issue_read,create_pull_request" ./github-mcp-server
+   GITHUB_TOOLS="get_file_contents,issue_read,create_pull_request" ./mcp-project-brain
    ```
 
 3. **Combining with Toolsets** (additive):
 
    ```bash
-   github-mcp-server --toolsets repos,issues --tools get_gist
+   mcp-project-brain --toolsets repos,issues --tools get_gist
    ```
 
    This registers all tools from `repos` and `issues` toolsets, plus `get_gist`.
@@ -449,7 +449,7 @@ You can also configure specific tools using the `--tools` flag. Tools can be use
 4. **Combining with Dynamic Toolsets** (additive):
 
    ```bash
-   github-mcp-server --tools get_file_contents --dynamic-toolsets
+   mcp-project-brain --tools get_file_contents --dynamic-toolsets
    ```
 
    This registers `get_file_contents` plus the dynamic toolset tools (`enable_toolset`, `list_available_toolsets`, `get_toolset_tools`).
@@ -469,7 +469,7 @@ When using Docker, you can pass the toolsets as environment variables:
 docker run -i --rm \
   -e GITHUB_PERSONAL_ACCESS_TOKEN=<your-token> \
   -e GITHUB_TOOLSETS="repos,issues,pull_requests,actions,code_security" \
-  ghcr.io/github/github-mcp-server
+  ghcr.io/github/mcp-project-brain
 ```
 
 ### Using Tools With Docker
@@ -481,14 +481,14 @@ When using Docker, you can pass specific tools as environment variables. You can
 docker run -i --rm \
   -e GITHUB_PERSONAL_ACCESS_TOKEN=<your-token> \
   -e GITHUB_TOOLS="get_file_contents,issue_read,create_pull_request" \
-  ghcr.io/github/github-mcp-server
+  ghcr.io/github/mcp-project-brain
 
 # Tools combined with toolsets (additive)
 docker run -i --rm \
   -e GITHUB_PERSONAL_ACCESS_TOKEN=<your-token> \
   -e GITHUB_TOOLSETS="repos,issues" \
   -e GITHUB_TOOLS="get_gist" \
-  ghcr.io/github/github-mcp-server
+  ghcr.io/github/mcp-project-brain
 ```
 
 ### Special toolsets
@@ -498,13 +498,13 @@ docker run -i --rm \
 The special toolset `all` can be provided to enable all available toolsets regardless of any other configuration:
 
 ```bash
-./github-mcp-server --toolsets all
+./mcp-project-brain --toolsets all
 ```
 
 Or using the environment variable:
 
 ```bash
-GITHUB_TOOLSETS="all" ./github-mcp-server
+GITHUB_TOOLSETS="all" ./mcp-project-brain
 ```
 
 #### "default" toolset
@@ -522,7 +522,7 @@ The default configuration is:
 To keep the default configuration and add additional toolsets:
 
 ```bash
-GITHUB_TOOLSETS="default,stargazers" ./github-mcp-server
+GITHUB_TOOLSETS="default,stargazers" ./mcp-project-brain
 ```
 
 ### Insiders Mode
@@ -532,13 +532,13 @@ The local GitHub MCP Server offers an insiders version with early access to new 
 1. **Using Command Line Argument**:
 
    ```bash
-   ./github-mcp-server --insiders
+   ./mcp-project-brain --insiders
    ```
 
 2. **Using Environment Variable**:
 
    ```bash
-   GITHUB_INSIDERS=true ./github-mcp-server
+   GITHUB_INSIDERS=true ./mcp-project-brain
    ```
 
 When using Docker:
@@ -547,7 +547,7 @@ When using Docker:
 docker run -i --rm \
   -e GITHUB_PERSONAL_ACCESS_TOKEN=<your-token> \
   -e GITHUB_INSIDERS=true \
-  ghcr.io/github/github-mcp-server
+  ghcr.io/github/mcp-project-brain
 ```
 
 ### Available Toolsets
@@ -1276,7 +1276,7 @@ The following sets of tools are available:
   - `order`: Sort order for results (string, optional)
   - `page`: Page number for pagination (min 1) (number, optional)
   - `perPage`: Results per page for pagination (min 1, max 100) (number, optional)
-  - `query`: Search query using GitHub's powerful code search syntax. Examples: 'content:Skill language:Java org:github', 'NOT is:archived language:Python OR language:go', 'repo:github/github-mcp-server'. Supports exact matching, language filters, path filters, and more. (string, required)
+  - `query`: Search query using GitHub's powerful code search syntax. Examples: 'content:Skill language:Java org:github', 'NOT is:archived language:Python OR language:go', 'repo:github/mcp-project-brain'. Supports exact matching, language filters, path filters, and more. (string, required)
   - `sort`: Sort field ('indexed' only) (string, optional)
 
 - **search_repositories** - Search repositories
@@ -1441,7 +1441,7 @@ Instead of starting with all tools enabled, you can turn on dynamic toolset disc
 When using the binary, you can pass the `--dynamic-toolsets` flag.
 
 ```bash
-./github-mcp-server --dynamic-toolsets
+./mcp-project-brain --dynamic-toolsets
 ```
 
 When using Docker, you can pass the toolsets as environment variables:
@@ -1450,7 +1450,7 @@ When using Docker, you can pass the toolsets as environment variables:
 docker run -i --rm \
   -e GITHUB_PERSONAL_ACCESS_TOKEN=<your-token> \
   -e GITHUB_DYNAMIC_TOOLSETS=1 \
-  ghcr.io/github/github-mcp-server
+  ghcr.io/github/mcp-project-brain
 ```
 
 ## Read-Only Mode
@@ -1458,7 +1458,7 @@ docker run -i --rm \
 To run the server in read-only mode, you can use the `--read-only` flag. This will only offer read-only tools, preventing any modifications to repositories, issues, pull requests, etc.
 
 ```bash
-./github-mcp-server --read-only
+./mcp-project-brain --read-only
 ```
 
 When using Docker, you can pass the read-only mode as an environment variable:
@@ -1467,7 +1467,7 @@ When using Docker, you can pass the read-only mode as an environment variable:
 docker run -i --rm \
   -e GITHUB_PERSONAL_ACCESS_TOKEN=<your-token> \
   -e GITHUB_READ_ONLY=1 \
-  ghcr.io/github/github-mcp-server
+  ghcr.io/github/mcp-project-brain
 ```
 
 ## Lockdown Mode
@@ -1475,7 +1475,7 @@ docker run -i --rm \
 Lockdown mode limits the content that the server will surface from public repositories. When enabled, the server checks whether the author of each item has push access to the repository. Private repositories are unaffected, and collaborators keep full access to their own content.
 
 ```bash
-./github-mcp-server --lockdown-mode
+./mcp-project-brain --lockdown-mode
 ```
 
 When running with Docker, set the corresponding environment variable:
@@ -1484,7 +1484,7 @@ When running with Docker, set the corresponding environment variable:
 docker run -i --rm \
   -e GITHUB_PERSONAL_ACCESS_TOKEN=<your-token> \
   -e GITHUB_LOCKDOWN_MODE=1 \
-  ghcr.io/github/github-mcp-server
+  ghcr.io/github/mcp-project-brain
 ```
 
 The behavior of lockdown mode depends on the tool invoked.
@@ -1505,7 +1505,7 @@ Following tools will filter out content from users lacking the push access:
 ## i18n / Overriding Descriptions
 
 The descriptions of the tools can be overridden by creating a
-`github-mcp-server-config.json` file in the same directory as the binary.
+`mcp-project-brain-config.json` file in the same directory as the binary.
 
 The file should contain a JSON object with the tool names as keys and the new
 descriptions as values. For example:
@@ -1525,8 +1525,8 @@ any new translations that have been added to the binary since the last time you
 exported.
 
 ```sh
-./github-mcp-server --export-translations
-cat github-mcp-server-config.json
+./mcp-project-brain --export-translations
+cat mcp-project-brain-config.json
 ```
 
 You can also use ENV vars to override the descriptions. The environment
@@ -1549,7 +1549,7 @@ GitHub Enterprise Server) so that agents can distinguish between them.
 
 | Key | Environment Variable | Default |
 |-----|---------------------|---------|
-| `SERVER_NAME` | `GITHUB_MCP_SERVER_NAME` | `github-mcp-server` |
+| `SERVER_NAME` | `GITHUB_MCP_SERVER_NAME` | `mcp-project-brain` |
 | `SERVER_TITLE` | `GITHUB_MCP_SERVER_TITLE` | `GitHub MCP Server` |
 
 For example, to configure a server instance for GitHub Enterprise Server:

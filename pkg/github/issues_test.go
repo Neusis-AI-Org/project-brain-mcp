@@ -11,10 +11,10 @@ import (
 	"testing"
 	"time"
 
-	"github.com/github/github-mcp-server/internal/githubv4mock"
-	"github.com/github/github-mcp-server/internal/toolsnaps"
-	"github.com/github/github-mcp-server/pkg/lockdown"
-	"github.com/github/github-mcp-server/pkg/translations"
+	"github.com/Neusis-AI-Org/mcp-project-brain/internal/githubv4mock"
+	"github.com/Neusis-AI-Org/mcp-project-brain/internal/toolsnaps"
+	"github.com/Neusis-AI-Org/mcp-project-brain/pkg/lockdown"
+	"github.com/Neusis-AI-Org/mcp-project-brain/pkg/translations"
 	"github.com/google/go-github/v82/github"
 	"github.com/google/jsonschema-go/jsonschema"
 	"github.com/shurcooL/githubv4"
@@ -635,7 +635,7 @@ func Test_SearchIssues(t *testing.T) {
 				GetSearchIssues: expectQueryParams(
 					t,
 					map[string]string{
-						"q":        "repo:github/github-mcp-server is:issue is:open (label:critical OR label:urgent)",
+						"q":        "repo:github/mcp-project-brain is:issue is:open (label:critical OR label:urgent)",
 						"page":     "1",
 						"per_page": "30",
 					},
@@ -644,7 +644,7 @@ func Test_SearchIssues(t *testing.T) {
 				),
 			}),
 			requestArgs: map[string]any{
-				"query": "repo:github/github-mcp-server is:issue is:open (label:critical OR label:urgent)",
+				"query": "repo:github/mcp-project-brain is:issue is:open (label:critical OR label:urgent)",
 			},
 			expectError:    false,
 			expectedResult: mockSearchResult,
@@ -655,7 +655,7 @@ func Test_SearchIssues(t *testing.T) {
 				GetSearchIssues: expectQueryParams(
 					t,
 					map[string]string{
-						"q":        "is:issue repo:github/github-mcp-server critical",
+						"q":        "is:issue repo:github/mcp-project-brain critical",
 						"page":     "1",
 						"per_page": "30",
 					},
@@ -664,7 +664,7 @@ func Test_SearchIssues(t *testing.T) {
 				),
 			}),
 			requestArgs: map[string]any{
-				"query": "repo:github/github-mcp-server critical",
+				"query": "repo:github/mcp-project-brain critical",
 				"owner": "different-owner",
 				"repo":  "different-repo",
 			},
@@ -697,7 +697,7 @@ func Test_SearchIssues(t *testing.T) {
 				GetSearchIssues: expectQueryParams(
 					t,
 					map[string]string{
-						"q":        "repo:github/github-mcp-server is:issue (label:critical OR label:urgent OR label:high-priority OR label:blocker)",
+						"q":        "repo:github/mcp-project-brain is:issue (label:critical OR label:urgent OR label:high-priority OR label:blocker)",
 						"page":     "1",
 						"per_page": "30",
 					},
@@ -706,7 +706,7 @@ func Test_SearchIssues(t *testing.T) {
 				),
 			}),
 			requestArgs: map[string]any{
-				"query": "repo:github/github-mcp-server is:issue (label:critical OR label:urgent OR label:high-priority OR label:blocker)",
+				"query": "repo:github/mcp-project-brain is:issue (label:critical OR label:urgent OR label:high-priority OR label:blocker)",
 			},
 			expectError:    false,
 			expectedResult: mockSearchResult,

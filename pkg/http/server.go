@@ -12,16 +12,16 @@ import (
 	"syscall"
 	"time"
 
-	ghcontext "github.com/github/github-mcp-server/pkg/context"
-	"github.com/github/github-mcp-server/pkg/github"
-	"github.com/github/github-mcp-server/pkg/http/oauth"
-	"github.com/github/github-mcp-server/pkg/inventory"
-	"github.com/github/github-mcp-server/pkg/lockdown"
-	"github.com/github/github-mcp-server/pkg/observability"
-	"github.com/github/github-mcp-server/pkg/observability/metrics"
-	"github.com/github/github-mcp-server/pkg/scopes"
-	"github.com/github/github-mcp-server/pkg/translations"
-	"github.com/github/github-mcp-server/pkg/utils"
+	ghcontext "github.com/Neusis-AI-Org/mcp-project-brain/pkg/context"
+	"github.com/Neusis-AI-Org/mcp-project-brain/pkg/github"
+	"github.com/Neusis-AI-Org/mcp-project-brain/pkg/http/oauth"
+	"github.com/Neusis-AI-Org/mcp-project-brain/pkg/inventory"
+	"github.com/Neusis-AI-Org/mcp-project-brain/pkg/lockdown"
+	"github.com/Neusis-AI-Org/mcp-project-brain/pkg/observability"
+	"github.com/Neusis-AI-Org/mcp-project-brain/pkg/observability/metrics"
+	"github.com/Neusis-AI-Org/mcp-project-brain/pkg/scopes"
+	"github.com/Neusis-AI-Org/mcp-project-brain/pkg/translations"
+	"github.com/Neusis-AI-Org/mcp-project-brain/pkg/utils"
 	"github.com/go-chi/chi/v5"
 )
 
@@ -48,7 +48,7 @@ type ServerConfig struct {
 	ResourcePath string
 
 	// ExportTranslations indicates if we should export translations
-	// See: https://github.com/github/github-mcp-server?tab=readme-ov-file#i18n--overriding-descriptions
+	// See: https://github.com/Neusis-AI-Org/mcp-project-brain?tab=readme-ov-file#i18n--overriding-descriptions
 	ExportTranslations bool
 
 	// EnableCommandLogging indicates if we should log commands
