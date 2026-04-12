@@ -277,10 +277,10 @@ func AllTools(t translations.TranslationHelperFunc) []inventory.ServerTool {
 
 		// Knowledge base tools
 		KBConfigTool(t),
+		KBReadTool(t),
 		KBWriteTool(t),
 		KBListTool(t),
 		KBSearchTool(t),
-		KBInitTool(t),
 	}
 }
 

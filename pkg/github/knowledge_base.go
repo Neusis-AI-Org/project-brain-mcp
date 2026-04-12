@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"sort"
 	"strings"
 	"time"
 
@@ -68,12 +69,14 @@ var ToolsetMetadataKnowledgeBase = inventory.ToolsetMetadata{
 }
 
 func generateKBToolsetInstructions(_ *inventory.Inventory) string {
-	return `## Knowledge Base Tools
-These tools manage a project knowledge base stored in a GitHub repository.
-The knowledge base structure and rules are defined in an AGENTS.md file at the root of the repository.
-Always call kb_config first to understand the repository's knowledge base structure before using other KB tools.
-All documents should use markdown format with YAML frontmatter (title, date, author, tags).
-The target repository is pre-configured on the server via --kb-owner and --kb-repo flags. You do not need to specify any repository information.`
+	return `## Project Knowledge Base
+This is the project's knowledge base — a shared memory layer for developers and coding agents. It contains project context such as architecture decisions, guides, conventions, and other documentation specific to this project.
+
+**Before starting any significant coding task**, call kb_config to discover the KB structure, then search or browse for relevant context. Understanding prior decisions and existing patterns leads to better code.
+
+**After completing work that changes architecture or introduces new patterns**, write back to the KB so future developers and agents have that context.
+
+The KB structure varies per project — always call kb_config first to discover what categories of documentation are available. All documents use markdown format with YAML frontmatter (title, date, author, tags). The target repository is pre-configured on the server.`
 }
 
 // KBConfig represents the parsed AGENTS.md configuration.
@@ -245,6 +248,229 @@ func parseAgentsMD(content string) (*KBConfig, error) {
 	return config, nil
 }
 
+// longestCommonPrefix returns the longest common path prefix between two paths.
+func longestCommonPrefix(a, b string) string {
+	aParts := strings.Split(a, "/")
+	bParts := strings.Split(b, "/")
+	var common []string
+	for i := 0; i < len(aParts) && i < len(bParts); i++ {
+		if aParts[i] != bParts[i] {
+			break
+		}
+		common = append(common, aParts[i])
+	}
+	return strings.Join(common, "/")
+}
+
+// enrichResultWithFrontmatter reads a file's frontmatter and boosts the search result score
+// based on title and tag matches.
+func enrichResultWithFrontmatter(ctx context.Context, client *github.Client, owner, repo, ref string, result *KBSearchResult, queryLower string) {
+	contentOpts := &github.RepositoryContentGetOptions{Ref: ref}
+	fileContent, _, fileResp, fileErr := client.Repositories.GetContents(ctx, owner, repo, result.Path, contentOpts)
+	if fileErr != nil || fileContent == nil {
+		return
+	}
+	if fileResp != nil && fileResp.Body != nil {
+		defer func() { _ = fileResp.Body.Close() }()
+	}
+	text, err := fileContent.GetContent()
+	if err != nil {
+		return
+	}
+	fm := parseFrontmatter(text)
+	result.Title = fm["title"]
+	if tagsStr, ok := fm["tags"]; ok {
+		tagsStr = strings.Trim(tagsStr, "[]")
+		for _, tag := range strings.Split(tagsStr, ",") {
+			tag = strings.TrimSpace(tag)
+			if tag != "" {
+				result.Tags = append(result.Tags, tag)
+			}
+		}
+	}
+	if strings.Contains(strings.ToLower(result.Title), queryLower) {
+		result.Score += 5
+	}
+	for _, tag := range result.Tags {
+		if strings.Contains(strings.ToLower(tag), queryLower) {
+			result.Score += 3
+		}
+	}
+}
+
+// searchViaTreeAPI uses the Git Trees API to list all files in one call, filters to
+// KB markdown files, then does targeted content reads for scoring. This is the fallback
+// when GitHub Code Search is unavailable (token issues, unindexed repos, GHES).
+//
+// Scale characteristics:
+//   - 1 API call for the tree (works for repos up to ~100k files)
+//   - Filename/path/frontmatter matching is done locally (zero API cost)
+//   - Content reads are bounded: max 50 files read for content matching
+func searchViaTreeAPI(ctx context.Context, client *github.Client, owner, repo, ref, queryLower, pathFilter string, kbPaths []string) ([]KBSearchResult, error) {
+	// Resolve the tree SHA for the ref
+	resolveRef := ref
+	if resolveRef == "" {
+		resolveRef = "HEAD"
+	}
+	gitRef, _, err := client.Git.GetRef(ctx, owner, repo, "heads/"+resolveRef)
+	if err != nil {
+		// Try as-is (could be a tag or "main"/"master")
+		gitRef, _, err = client.Git.GetRef(ctx, owner, repo, "heads/main")
+		if err != nil {
+			return nil, fmt.Errorf("failed to resolve ref: %w", err)
+		}
+	}
+	treeSHA := gitRef.GetObject().GetSHA()
+
+	tree, _, err := client.Git.GetTree(ctx, owner, repo, treeSHA, true)
+	if err != nil {
+		return nil, fmt.Errorf("failed to get repo tree: %w", err)
+	}
+
+	// Filter tree entries to KB markdown files
+	var candidates []string
+	for _, entry := range tree.Entries {
+		path := entry.GetPath()
+		if entry.GetType() != "blob" || !strings.HasSuffix(strings.ToLower(path), ".md") {
+			continue
+		}
+		if pathFilter != "" {
+			if !strings.HasPrefix(path, strings.Trim(pathFilter, "/")+"/") {
+				continue
+			}
+		} else if len(kbPaths) > 0 {
+			inKB := false
+			for _, kbPath := range kbPaths {
+				if strings.HasPrefix(path, kbPath+"/") {
+					inKB = true
+					break
+				}
+			}
+			if !inKB {
+				continue
+			}
+		}
+		candidates = append(candidates, path)
+	}
+
+	// Phase 1: Score by path/filename match (no API calls)
+	type candidate struct {
+		path  string
+		score int
+	}
+	scored := make([]candidate, 0, len(candidates))
+	queryTerms := strings.Fields(queryLower)
+
+	for _, path := range candidates {
+		pathLower := strings.ToLower(path)
+		score := 0
+		for _, term := range queryTerms {
+			if strings.Contains(pathLower, term) {
+				score += 2
+			}
+		}
+		scored = append(scored, candidate{path: path, score: score})
+	}
+
+	// Sort by path score descending so we prioritize reading likely matches
+	sort.Slice(scored, func(i, j int) bool {
+		return scored[i].score > scored[j].score
+	})
+
+	// Phase 2: Read up to maxContentReads files for frontmatter + content matching
+	// Prioritize files that already matched by path, but also read unmatched files
+	// if we have budget remaining.
+	const maxContentReads = 50
+	var results []KBSearchResult
+	readsUsed := 0
+
+	for _, c := range scored {
+		if readsUsed >= maxContentReads {
+			// For remaining candidates that matched by path but weren't read,
+			// include them with path-only score
+			if c.score > 0 {
+				results = append(results, KBSearchResult{
+					Path:  c.path,
+					Score: c.score,
+				})
+			}
+			continue
+		}
+
+		contentOpts := &github.RepositoryContentGetOptions{Ref: ref}
+		fileContent, _, fileResp, fileErr := client.Repositories.GetContents(ctx, owner, repo, c.path, contentOpts)
+		if fileResp != nil && fileResp.Body != nil {
+			defer func() { _ = fileResp.Body.Close() }()
+		}
+		if fileErr != nil || fileContent == nil {
+			readsUsed++
+			continue
+		}
+		readsUsed++
+
+		text, err := fileContent.GetContent()
+		if err != nil {
+			continue
+		}
+
+		// Score based on frontmatter and content
+		fm := parseFrontmatter(text)
+		result := KBSearchResult{
+			Path:  c.path,
+			Title: fm["title"],
+			Score: c.score,
+		}
+
+		if tagsStr, ok := fm["tags"]; ok {
+			tagsStr = strings.Trim(tagsStr, "[]")
+			for _, tag := range strings.Split(tagsStr, ",") {
+				tag = strings.TrimSpace(tag)
+				if tag != "" {
+					result.Tags = append(result.Tags, tag)
+				}
+			}
+		}
+
+		// Title match
+		if result.Title != "" && strings.Contains(strings.ToLower(result.Title), queryLower) {
+			result.Score += 5
+		}
+		// Tag match
+		for _, tag := range result.Tags {
+			for _, term := range queryTerms {
+				if strings.Contains(strings.ToLower(tag), term) {
+					result.Score += 3
+				}
+			}
+		}
+		// Content match — check if query terms appear in body
+		textLower := strings.ToLower(text)
+		for _, term := range queryTerms {
+			if strings.Contains(textLower, term) {
+				result.Score += 1
+				// Extract a match snippet (first occurrence, up to 200 chars of context)
+				idx := strings.Index(textLower, term)
+				start := idx - 80
+				if start < 0 {
+					start = 0
+				}
+				end := idx + len(term) + 120
+				if end > len(text) {
+					end = len(text)
+				}
+				snippet := strings.ReplaceAll(text[start:end], "\n", " ")
+				result.MatchLines = append(result.MatchLines, strings.TrimSpace(snippet))
+			}
+		}
+
+		if result.Score > 0 {
+			results = append(results, result)
+		}
+	}
+
+	return results, nil
+}
+
 // parseFrontmatter extracts YAML frontmatter from a markdown document.
 func parseFrontmatter(content string) map[string]string {
 	fm := make(map[string]string)
@@ -296,7 +522,7 @@ func KBConfigTool(t translations.TranslationHelperFunc) inventory.ServerTool {
 		ToolsetMetadataKnowledgeBase,
 		mcp.Tool{
 			Name:        "kb_config",
-			Description: t("TOOL_KB_CONFIG_DESCRIPTION", "Read and parse the AGENTS.md knowledge base configuration from a GitHub repository. Call this first to understand the repo's knowledge base structure, rules, and agent permissions before using other KB tools."),
+			Description: t("TOOL_KB_CONFIG_DESCRIPTION", "Understand the project's knowledge base structure, available documentation paths, and rules. Call this at the start of a session before using other KB tools — the KB structure varies per project, so always discover it first."),
 			Annotations: &mcp.ToolAnnotations{
 				Title:        t("TOOL_KB_CONFIG_USER_TITLE", "Get knowledge base config"),
 				ReadOnlyHint: true,
@@ -365,7 +591,7 @@ func KBWriteTool(t translations.TranslationHelperFunc) inventory.ServerTool {
 		ToolsetMetadataKnowledgeBase,
 		mcp.Tool{
 			Name:        "kb_write",
-			Description: t("TOOL_KB_WRITE_DESCRIPTION", "Create or update a knowledge base document in a GitHub repository. Automatically adds YAML frontmatter if not present. Validates the path against AGENTS.md structure rules."),
+			Description: t("TOOL_KB_WRITE_DESCRIPTION", "Contribute to the project knowledge base. After making significant changes — new architecture, patterns, decisions, or resolving complex issues — document the context here so future developers and agents benefit from that knowledge."),
 			Annotations: &mcp.ToolAnnotations{
 				Title:        t("TOOL_KB_WRITE_USER_TITLE", "Write knowledge base document"),
 				ReadOnlyHint: false,
@@ -571,7 +797,7 @@ func KBListTool(t translations.TranslationHelperFunc) inventory.ServerTool {
 		ToolsetMetadataKnowledgeBase,
 		mcp.Tool{
 			Name:        "kb_list",
-			Description: t("TOOL_KB_LIST_DESCRIPTION", "List knowledge base documents with their frontmatter metadata (title, date, author, tags). Supports filtering by folder, tags, and date range."),
+			Description: t("TOOL_KB_LIST_DESCRIPTION", "Browse available knowledge base documents to discover what project context exists. Filter by folder or tag to find relevant documentation for your current task."),
 			Annotations: &mcp.ToolAnnotations{
 				Title:        t("TOOL_KB_LIST_USER_TITLE", "List knowledge base documents"),
 				ReadOnlyHint: true,
@@ -757,7 +983,7 @@ func KBSearchTool(t translations.TranslationHelperFunc) inventory.ServerTool {
 		ToolsetMetadataKnowledgeBase,
 		mcp.Tool{
 			Name:        "kb_search",
-			Description: t("TOOL_KB_SEARCH_DESCRIPTION", "Search across knowledge base documents by keyword. Returns matching documents with context lines and frontmatter metadata. Searches within the knowledge base paths defined in AGENTS.md."),
+			Description: t("TOOL_KB_SEARCH_DESCRIPTION", "Search the project knowledge base for context relevant to your current task. Use this before making changes to understand prior decisions, existing patterns, and project conventions."),
 			Annotations: &mcp.ToolAnnotations{
 				Title:        t("TOOL_KB_SEARCH_USER_TITLE", "Search knowledge base"),
 				ReadOnlyHint: true,
@@ -805,101 +1031,80 @@ func KBSearchTool(t translations.TranslationHelperFunc) inventory.ServerTool {
 				return utils.NewToolResultError("failed to get GitHub client"), nil, nil
 			}
 
-			// Build GitHub code search query scoped to the repo and markdown files
+			// Resolve KB paths from AGENTS.md for scoping
+			var kbPaths []string
+			agentsOpts := &github.RepositoryContentGetOptions{Ref: ref}
+			agentsFile, _, agentsResp, agentsErr := client.Repositories.GetContents(ctx, owner, repo, "AGENTS.md", agentsOpts)
+			if agentsErr == nil && agentsFile != nil {
+				if agentsResp != nil && agentsResp.Body != nil {
+					defer func() { _ = agentsResp.Body.Close() }()
+				}
+				if agentsContent, err := agentsFile.GetContent(); err == nil {
+					if config, err := parseAgentsMD(agentsContent); err == nil {
+						for _, s := range config.Structure {
+							kbPaths = append(kbPaths, strings.Trim(s.Path, "/"))
+						}
+					}
+				}
+			}
+
+			queryLower := strings.ToLower(query)
+			var results []KBSearchResult
+
+			// --- Strategy 1: GitHub Code Search API (scales to large repos) ---
 			searchQuery := fmt.Sprintf("%s repo:%s/%s language:markdown", query, owner, repo)
 			if pathFilter != "" {
 				searchQuery += fmt.Sprintf(" path:%s", strings.Trim(pathFilter, "/"))
-			} else {
-				// Try to scope search to KB paths from AGENTS.md
-				opts := &github.RepositoryContentGetOptions{Ref: ref}
-				agentsFile, _, agentsResp, agentsErr := client.Repositories.GetContents(ctx, owner, repo, "AGENTS.md", opts)
-				if agentsErr == nil && agentsFile != nil {
-					if agentsResp != nil && agentsResp.Body != nil {
-						defer func() { _ = agentsResp.Body.Close() }()
-					}
-					agentsContent, err := agentsFile.GetContent()
-					if err == nil {
-						config, err := parseAgentsMD(agentsContent)
-						if err == nil && len(config.Structure) > 0 {
-							// Use the first path as a scope hint (GitHub search supports one path filter)
-							// For multiple paths, we filter results after search
-							searchQuery += fmt.Sprintf(" path:%s", config.Structure[0].Path)
-						}
-					}
+			} else if len(kbPaths) > 0 {
+				commonPrefix := kbPaths[0]
+				for _, p := range kbPaths[1:] {
+					commonPrefix = longestCommonPrefix(commonPrefix, p)
+				}
+				if commonPrefix != "" {
+					searchQuery += fmt.Sprintf(" path:%s", commonPrefix)
 				}
 			}
 
 			searchOpts := &github.SearchOptions{
-				ListOptions: github.ListOptions{
-					PerPage: 20,
-				},
+				ListOptions: github.ListOptions{PerPage: 20},
 			}
-
-			searchResult, searchResp, err := client.Search.Code(ctx, searchQuery, searchOpts)
-			if err != nil {
-				return ghErrors.NewGitHubAPIErrorResponse(ctx,
-					fmt.Sprintf("failed to search knowledge base with query '%s'", query),
-					searchResp, err), nil, nil
-			}
+			searchResult, searchResp, searchErr := client.Search.Code(ctx, searchQuery, searchOpts)
 			if searchResp != nil && searchResp.Body != nil {
 				defer func() { _ = searchResp.Body.Close() }()
 			}
 
-			// Process results and enrich with frontmatter
-			var results []KBSearchResult
-			queryLower := strings.ToLower(query)
+			if searchErr == nil && searchResult.GetTotal() > 0 {
+				// Code Search returned results — enrich with frontmatter
+				for _, codeResult := range searchResult.CodeResults {
+					filePath := codeResult.GetPath()
+					result := KBSearchResult{Path: filePath, Score: 1}
 
-			for _, codeResult := range searchResult.CodeResults {
-				filePath := codeResult.GetPath()
-
-				result := KBSearchResult{
-					Path:  filePath,
-					Score: 1,
-				}
-
-				// Extract text matches
-				for _, match := range codeResult.TextMatches {
-					fragment := match.GetFragment()
-					if fragment != "" {
-						result.MatchLines = append(result.MatchLines, fragment)
-					}
-				}
-
-				// Try to get frontmatter for richer results
-				contentOpts := &github.RepositoryContentGetOptions{Ref: ref}
-				fileContent, _, fileResp, fileErr := client.Repositories.GetContents(ctx, owner, repo, filePath, contentOpts)
-				if fileErr == nil && fileContent != nil {
-					if fileResp != nil && fileResp.Body != nil {
-						defer func() { _ = fileResp.Body.Close() }()
-					}
-					text, err := fileContent.GetContent()
-					if err == nil {
-						fm := parseFrontmatter(text)
-						result.Title = fm["title"]
-						if tagsStr, ok := fm["tags"]; ok {
-							tagsStr = strings.Trim(tagsStr, "[]")
-							for _, tag := range strings.Split(tagsStr, ",") {
-								tag = strings.TrimSpace(tag)
-								if tag != "" {
-									result.Tags = append(result.Tags, tag)
-								}
-							}
-						}
-
-						// Boost score for title matches
-						if strings.Contains(strings.ToLower(result.Title), queryLower) {
-							result.Score += 5
-						}
-						// Boost score for tag matches
-						for _, tag := range result.Tags {
-							if strings.Contains(strings.ToLower(tag), queryLower) {
-								result.Score += 3
-							}
+					for _, match := range codeResult.TextMatches {
+						if f := match.GetFragment(); f != "" {
+							result.MatchLines = append(result.MatchLines, f)
 						}
 					}
-				}
 
-				results = append(results, result)
+					enrichResultWithFrontmatter(ctx, client, owner, repo, ref, &result, queryLower)
+					results = append(results, result)
+				}
+			} else {
+				// --- Strategy 2: Git Tree API fallback ---
+				// Single API call to get the full repo tree, then filter locally.
+				// This handles cases where Code Search is unavailable (token scope,
+				// unindexed repos, GHES without code search, etc.).
+				results, err = searchViaTreeAPI(ctx, client, owner, repo, ref, queryLower, pathFilter, kbPaths)
+				if err != nil {
+					return utils.NewToolResultError(fmt.Sprintf("search failed: %s", err)), nil, nil
+				}
+			}
+
+			// Sort by score descending, cap at 20 results
+			sort.Slice(results, func(i, j int) bool {
+				return results[i].Score > results[j].Score
+			})
+			if len(results) > 20 {
+				results = results[:20]
 			}
 
 			response := map[string]any{
@@ -917,43 +1122,30 @@ func KBSearchTool(t translations.TranslationHelperFunc) inventory.ServerTool {
 	)
 }
 
-// KBInitTool scaffolds a new knowledge base in a repository.
-func KBInitTool(t translations.TranslationHelperFunc) inventory.ServerTool {
+// KBReadTool reads a full knowledge base document by path, returning content and parsed frontmatter.
+func KBReadTool(t translations.TranslationHelperFunc) inventory.ServerTool {
 	return NewTool(
 		ToolsetMetadataKnowledgeBase,
 		mcp.Tool{
-			Name:        "kb_init",
-			Description: t("TOOL_KB_INIT_DESCRIPTION", "Initialize a knowledge base in a GitHub repository by creating an AGENTS.md configuration file and the initial folder structure. Use this to set up a new knowledge base."),
+			Name:        "kb_read",
+			Description: t("TOOL_KB_READ_DESCRIPTION", "Read a full knowledge base document to get complete context. Use this after finding relevant docs via kb_search or kb_list to understand prior decisions and existing patterns before making implementation choices."),
 			Annotations: &mcp.ToolAnnotations{
-				Title:        t("TOOL_KB_INIT_USER_TITLE", "Initialize knowledge base"),
-				ReadOnlyHint: false,
+				Title:        t("TOOL_KB_READ_USER_TITLE", "Read knowledge base document"),
+				ReadOnlyHint: true,
 			},
 			InputSchema: &jsonschema.Schema{
 				Type: "object",
 				Properties: map[string]*jsonschema.Schema{
-"directories": {
-						Type:        "array",
-						Description: "Knowledge base directories to create. Each entry is an object with 'path' and optional 'description'. Defaults to a standard structure if not provided.",
-						Items: &jsonschema.Schema{
-							Type: "object",
-							Properties: map[string]*jsonschema.Schema{
-								"path": {
-									Type:        "string",
-									Description: "Directory path (e.g., 'docs/architecture')",
-								},
-								"description": {
-									Type:        "string",
-									Description: "Description of what this directory contains",
-								},
-							},
-							Required: []string{"path"},
-						},
-					},
-					"branch": {
+					"path": {
 						Type:        "string",
-						Description: "Branch to create the KB on. Defaults to the repository's default branch.",
+						Description: "Path to the document (e.g., 'docs/architecture/kb-context-engine.md')",
+					},
+					"ref": {
+						Type:        "string",
+						Description: "Git ref (branch or tag). Defaults to the repository's default branch.",
 					},
 				},
+				Required: []string{"path"},
 			},
 		},
 		[]scopes.Scope{scopes.Repo},
@@ -962,159 +1154,71 @@ func KBInitTool(t translations.TranslationHelperFunc) inventory.ServerTool {
 			if errMsg != "" {
 				return utils.NewToolResultError(errMsg), nil, nil
 			}
-			branch, err := OptionalParam[string](args, "branch")
+			path, err := RequiredParam[string](args, "path")
+			if err != nil {
+				return utils.NewToolResultError(err.Error()), nil, nil
+			}
+			ref, err := OptionalParam[string](args, "ref")
 			if err != nil {
 				return utils.NewToolResultError(err.Error()), nil, nil
 			}
 
-			// Parse directories or use defaults
-			type dirEntry struct {
-				Path        string
-				Description string
-			}
-			var dirs []dirEntry
-
-			if dirsRaw, ok := args["directories"]; ok {
-				if dirsArr, ok := dirsRaw.([]any); ok {
-					for _, d := range dirsArr {
-						if dm, ok := d.(map[string]any); ok {
-							p, _ := dm["path"].(string)
-							desc, _ := dm["description"].(string)
-							if p != "" {
-								dirs = append(dirs, dirEntry{Path: strings.Trim(p, "/"), Description: desc})
-							}
-						}
-					}
-				}
-			}
-
-			if len(dirs) == 0 {
-				dirs = []dirEntry{
-					{Path: "docs/architecture", Description: "System design and architecture diagrams"},
-					{Path: "docs/decisions", Description: "Architecture Decision Records (ADRs)"},
-					{Path: "docs/meeting-notes", Description: "Meeting notes and summaries"},
-					{Path: "docs/runbooks", Description: "Operational runbooks and guides"},
-				}
-			}
-
-			// Generate AGENTS.md content
-			var agentsMD strings.Builder
-			agentsMD.WriteString("---\nversion: 1\n---\n\n")
-			agentsMD.WriteString("# Knowledge Base Configuration\n\n")
-			agentsMD.WriteString("## Structure\n")
-			for _, d := range dirs {
-				if d.Description != "" {
-					agentsMD.WriteString(fmt.Sprintf("- %s    # %s\n", d.Path, d.Description))
-				} else {
-					agentsMD.WriteString(fmt.Sprintf("- %s\n", d.Path))
-				}
-			}
-			agentsMD.WriteString("\n## Rules\n")
-			agentsMD.WriteString("frontmatter: required\n")
-			agentsMD.WriteString("naming: kebab-case\n")
-			agentsMD.WriteString("date_prefix: false\n")
-			agentsMD.WriteString("\n## Agents\n")
-			agentsMD.WriteString("coding-agent:\n")
-			agentsMD.WriteString("  write: [*]\n")
-			agentsMD.WriteString("  read: [*]\n")
-
-			// Build files array for push_files-style commit
-			var files []*github.TreeEntry
-
-			// AGENTS.md
-			files = append(files, &github.TreeEntry{
-				Path:    github.Ptr("AGENTS.md"),
-				Mode:    github.Ptr("100644"),
-				Type:    github.Ptr("blob"),
-				Content: github.Ptr(agentsMD.String()),
-			})
-
-			// Create .gitkeep in each directory
-			for _, d := range dirs {
-				files = append(files, &github.TreeEntry{
-					Path:    github.Ptr(d.Path + "/.gitkeep"),
-					Mode:    github.Ptr("100644"),
-					Type:    github.Ptr("blob"),
-					Content: github.Ptr(""),
-				})
-			}
+			// Normalize path
+			path = strings.TrimPrefix(path, "/")
 
 			client, err := deps.GetClient(ctx)
 			if err != nil {
 				return utils.NewToolResultError("failed to get GitHub client"), nil, nil
 			}
 
-			// Get the default branch if none specified
-			if branch == "" {
-				repoInfo, repoResp, err := client.Repositories.Get(ctx, owner, repo)
-				if err != nil {
-					return ghErrors.NewGitHubAPIErrorResponse(ctx, "failed to get repository info", repoResp, err), nil, nil
-				}
-				if repoResp != nil && repoResp.Body != nil {
-					defer func() { _ = repoResp.Body.Close() }()
-				}
-				branch = repoInfo.GetDefaultBranch()
-			}
-
-			// Get the branch reference
-			ref, resp, err := client.Git.GetRef(ctx, owner, repo, "refs/heads/"+branch)
+			opts := &github.RepositoryContentGetOptions{Ref: ref}
+			fileContent, _, resp, err := client.Repositories.GetContents(ctx, owner, repo, path, opts)
 			if err != nil {
-				return ghErrors.NewGitHubAPIErrorResponse(ctx, "failed to get branch reference", resp, err), nil, nil
+				if resp != nil && resp.StatusCode == http.StatusNotFound {
+					return utils.NewToolResultError(fmt.Sprintf("document not found: %s", path)), nil, nil
+				}
+				return ghErrors.NewGitHubAPIErrorResponse(ctx, "failed to get document", resp, err), nil, nil
 			}
 			if resp != nil && resp.Body != nil {
 				defer func() { _ = resp.Body.Close() }()
 			}
 
-			// Get the base commit
-			baseCommit, commitResp, err := client.Git.GetCommit(ctx, owner, repo, *ref.Object.SHA)
+			content, err := fileContent.GetContent()
 			if err != nil {
-				return ghErrors.NewGitHubAPIErrorResponse(ctx, "failed to get base commit", commitResp, err), nil, nil
-			}
-			if commitResp != nil && commitResp.Body != nil {
-				defer func() { _ = commitResp.Body.Close() }()
+				return utils.NewToolResultError(fmt.Sprintf("failed to decode document: %s", err)), nil, nil
 			}
 
-			// Create a new tree
-			newTree, treeResp, err := client.Git.CreateTree(ctx, owner, repo, *baseCommit.Tree.SHA, files)
-			if err != nil {
-				return ghErrors.NewGitHubAPIErrorResponse(ctx, "failed to create tree", treeResp, err), nil, nil
-			}
-			if treeResp != nil && treeResp.Body != nil {
-				defer func() { _ = treeResp.Body.Close() }()
-			}
+			// Parse frontmatter
+			fm := parseFrontmatter(content)
 
-			// Create the commit
-			commit := github.Commit{
-				Message: github.Ptr("docs: initialize knowledge base"),
-				Tree:    newTree,
-				Parents: []*github.Commit{{SHA: baseCommit.SHA}},
-			}
-			newCommit, newCommitResp, err := client.Git.CreateCommit(ctx, owner, repo, commit, nil)
-			if err != nil {
-				return ghErrors.NewGitHubAPIErrorResponse(ctx, "failed to create commit", newCommitResp, err), nil, nil
-			}
-			if newCommitResp != nil && newCommitResp.Body != nil {
-				defer func() { _ = newCommitResp.Body.Close() }()
-			}
-
-			// Update the reference
-			_, updateResp, err := client.Git.UpdateRef(ctx, owner, repo, *ref.Ref, github.UpdateRef{
-				SHA:   *newCommit.SHA,
-				Force: github.Ptr(false),
-			})
-			if err != nil {
-				return ghErrors.NewGitHubAPIErrorResponse(ctx, "failed to update reference", updateResp, err), nil, nil
-			}
-			if updateResp != nil && updateResp.Body != nil {
-				defer func() { _ = updateResp.Body.Close() }()
-			}
-
+			// Build response with metadata and content
 			result := map[string]any{
-				"message":     "Knowledge base initialized successfully",
-				"commit_sha":  newCommit.GetSHA(),
-				"branch":      branch,
-				"agents_md":   "AGENTS.md",
-				"directories": dirs,
+				"path":    path,
+				"sha":     fileContent.GetSHA(),
+				"size":    fileContent.GetSize(),
+				"content": content,
+			}
+			if fm["title"] != "" {
+				result["title"] = fm["title"]
+			}
+			if fm["date"] != "" {
+				result["date"] = fm["date"]
+			}
+			if fm["author"] != "" {
+				result["author"] = fm["author"]
+			}
+			if tagsStr, ok := fm["tags"]; ok {
+				tagsStr = strings.Trim(tagsStr, "[]")
+				var tags []string
+				for _, tag := range strings.Split(tagsStr, ",") {
+					tag = strings.TrimSpace(tag)
+					if tag != "" {
+						tags = append(tags, tag)
+					}
+				}
+				if len(tags) > 0 {
+					result["tags"] = tags
+				}
 			}
 
 			r, err := json.Marshal(result)
@@ -1125,3 +1229,4 @@ func KBInitTool(t translations.TranslationHelperFunc) inventory.ServerTool {
 		},
 	)
 }
+
