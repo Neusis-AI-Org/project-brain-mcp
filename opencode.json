@@ -1,0 +1,15 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "mcp": {
+    "project-brain-mcp": {
+      "type": "remote",
+      "url": "https://mcp-neusis-project-brain-1074011666170.us-central1.run.app",
+      "oauth": false,
+      "headers": {
+        "Authorization": "Bearer ${env:GITHUB_PERSONAL_ACCESS_TOKEN}",
+        "X-KB-Repo": "Neusis-AI-Org/project-brain-mcp-kb"
+      },
+      "enabled": true
+    }
+  }
+}

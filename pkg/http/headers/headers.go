@@ -46,6 +46,8 @@ const (
 	MCPExcludeToolsHeader = "X-MCP-Exclude-Tools"
 	// MCPFeaturesHeader is a comma-separated list of feature flags to enable.
 	MCPFeaturesHeader = "X-MCP-Features"
+	// KBRepoHeader specifies the target repository for knowledge base tools (format: "owner/repo").
+	KBRepoHeader = "X-KB-Repo"
 
 	// GitHub-specific headers.
 

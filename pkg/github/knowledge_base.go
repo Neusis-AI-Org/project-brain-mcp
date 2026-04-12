@@ -47,7 +47,7 @@ func resolveKBOwnerRepo(ctx context.Context) (string, string, string) {
 			return defaults.Owner, defaults.Repo, ""
 		}
 	}
-	return "", "", "knowledge base repository not configured — set --kb-owner and --kb-repo server flags"
+	return "", "", "knowledge base repository not configured — set --kb-repo flag (stdio) or X-KB-Repo header (http) in owner/repo format"
 }
 
 // InjectKBDefaultsMiddleware creates MCP middleware that injects KB defaults into context.

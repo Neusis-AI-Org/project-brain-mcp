@@ -129,3 +129,19 @@ func HasUISupport(ctx context.Context) (supported bool, ok bool) {
 	v, ok := ctx.Value(uiSupportCtxKey{}).(bool)
 	return v, ok
 }
+
+// kbRepoCtxKey is a context key for the KB repo (owner/repo format) from request headers
+type kbRepoCtxKey struct{}
+
+// WithKBRepo stores the KB repo (owner/repo format) in the context
+func WithKBRepo(ctx context.Context, repo string) context.Context {
+	return context.WithValue(ctx, kbRepoCtxKey{}, repo)
+}
+
+// GetKBRepo retrieves the KB repo (owner/repo format) from the context
+func GetKBRepo(ctx context.Context) string {
+	if repo, ok := ctx.Value(kbRepoCtxKey{}).(string); ok {
+		return repo
+	}
+	return ""
+}

@@ -5,6 +5,7 @@ import (
 	"errors"
 	"log/slog"
 	"net/http"
+	"strings"
 
 	ghcontext "github.com/github/github-mcp-server/pkg/context"
 	"github.com/github/github-mcp-server/pkg/github"
@@ -199,12 +200,22 @@ func (h *Handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		invToUse = inv.ForMCPRequest(methodInfo.Method, methodInfo.ItemName)
 	}
 
+	// Extract KB repo from request headers (X-KB-Repo: owner/repo)
+	var kbOwner, kbRepo string
+	if kbRepoFull := ghcontext.GetKBRepo(r.Context()); kbRepoFull != "" {
+		if parts := strings.SplitN(kbRepoFull, "/", 2); len(parts) == 2 {
+			kbOwner, kbRepo = parts[0], parts[1]
+		}
+	}
+
 	ghServer, err := h.githubMcpServerFactory(r, h.deps, invToUse, &github.MCPServerConfig{
 		Version:           h.config.Version,
 		Translator:        h.t,
 		ContentWindowSize: h.config.ContentWindowSize,
 		Logger:            h.logger,
 		RepoAccessTTL:     h.config.RepoAccessCacheTTL,
+		KBOwner:           kbOwner,
+		KBRepo:            kbRepo,
 		// Explicitly set empty capabilities. inv.ForMCPRequest currently returns nothing for Initialize.
 		ServerOptions: []github.MCPServerOption{
 			func(so *mcp.ServerOptions) {

@@ -50,6 +50,11 @@ func WithRequestConfig(next http.Handler) http.Handler {
 			ctx = ghcontext.WithHeaderFeatures(ctx, features)
 		}
 
+		// KB repo (owner/repo format)
+		if kbRepo := strings.TrimSpace(r.Header.Get(headers.KBRepoHeader)); kbRepo != "" {
+			ctx = ghcontext.WithKBRepo(ctx, kbRepo)
+		}
+
 		next.ServeHTTP(w, r.WithContext(ctx))
 	})
 }

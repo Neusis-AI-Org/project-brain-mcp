@@ -277,9 +277,9 @@ func RunStdioServer(cfg StdioServerConfig) error {
 		logger.Debug("skipping scope filtering for non-PAT token")
 	}
 
-	// Validate that --kb-owner and --kb-repo are set when knowledge_base toolset is enabled
+	// Validate that --kb-repo is set when knowledge_base toolset is enabled
 	if kbToolsetEnabled(cfg.EnabledToolsets) && (cfg.KBOwner == "" || cfg.KBRepo == "") {
-		return fmt.Errorf("--kb-owner and --kb-repo are required when the knowledge_base toolset is enabled")
+		return fmt.Errorf("--kb-repo is required when the knowledge_base toolset is enabled (format: owner/repo)")
 	}
 
 	ghServer, err := NewStdioMCPServer(ctx, github.MCPServerConfig{
