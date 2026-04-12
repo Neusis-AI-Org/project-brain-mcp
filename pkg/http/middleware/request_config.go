@@ -50,8 +50,10 @@ func WithRequestConfig(next http.Handler) http.Handler {
 			ctx = ghcontext.WithHeaderFeatures(ctx, features)
 		}
 
-		// KB repo (owner/repo format)
+		// KB repo (owner/repo format) — check header first, then query param
 		if kbRepo := strings.TrimSpace(r.Header.Get(headers.KBRepoHeader)); kbRepo != "" {
+			ctx = ghcontext.WithKBRepo(ctx, kbRepo)
+		} else if kbRepo := strings.TrimSpace(r.URL.Query().Get("kb-repo")); kbRepo != "" {
 			ctx = ghcontext.WithKBRepo(ctx, kbRepo)
 		}
 
