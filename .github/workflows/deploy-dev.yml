@@ -32,6 +32,8 @@ jobs:
 
       - name: Set up Cloud SDK
         uses: google-github-actions/setup-gcloud@v3
+        with:
+          project_id: ${{ env.PROJECT_ID }}
 
       - name: Log in to Artifact Registry
         run: |
@@ -61,6 +63,6 @@ jobs:
 
       - name: Output service URL
         run: |
-          URL=$(gcloud run services describe "$SERVICE_NAME" --region="$REGION" --format="value(status.url)")
+          URL=$(gcloud run services describe "$SERVICE_NAME" --project="$PROJECT_ID" --region="$REGION" --format="value(status.url)")
           echo "## Deployed to Cloud Run (Dev)" >> "$GITHUB_STEP_SUMMARY"
           echo "Service URL: $URL" >> "$GITHUB_STEP_SUMMARY"
