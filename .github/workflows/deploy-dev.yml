@@ -33,8 +33,10 @@ jobs:
       - name: Set up Cloud SDK
         uses: google-github-actions/setup-gcloud@v3
 
-      - name: Configure Docker for Artifact Registry
-        run: gcloud auth configure-docker "$REGISTRY" --quiet
+      - name: Log in to Artifact Registry
+        run: |
+          gcloud auth print-access-token \
+            | docker login -u oauth2accesstoken --password-stdin "https://$REGISTRY"
 
       - name: Build and push Docker image
         run: |
