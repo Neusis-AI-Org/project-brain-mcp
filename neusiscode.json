@@ -1,0 +1,14 @@
+{
+  "mcpServers": {
+    "project-brain": {
+      "command": "mcp-project-brain",
+      "args": [
+        "stdio",
+        "--kb-repo=Neusis-AI-Org/project-brain-mcp"
+      ],
+      "env": {
+        "GITHUB_PERSONAL_ACCESS_TOKEN": "${GITHUB_PERSONAL_ACCESS_TOKEN}"
+      }
+    }
+  }
+}
