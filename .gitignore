@@ -39,6 +39,9 @@ pkg/github/ui_dist/*
 # OpenCode
 .opencode/
 
+# Claude Code local settings
+.claude/
+
 # MCP client configs (may contain tokens/secrets)
 .mcp.json
 opencode.json
