@@ -5,9 +5,9 @@ import (
 	"encoding/json"
 	"fmt"
 
-	"github.com/Neusis-AI-Org/mcp-project-brain/pkg/inventory"
-	"github.com/Neusis-AI-Org/mcp-project-brain/pkg/translations"
-	"github.com/Neusis-AI-Org/mcp-project-brain/pkg/utils"
+	"github.com/github/github-mcp-server/pkg/inventory"
+	"github.com/github/github-mcp-server/pkg/translations"
+	"github.com/github/github-mcp-server/pkg/utils"
 	"github.com/google/jsonschema-go/jsonschema"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 )

@@ -6,10 +6,10 @@ import (
 	"log/slog"
 	"testing"
 
-	"github.com/Neusis-AI-Org/mcp-project-brain/pkg/github"
-	"github.com/Neusis-AI-Org/mcp-project-brain/pkg/observability"
-	"github.com/Neusis-AI-Org/mcp-project-brain/pkg/observability/metrics"
-	"github.com/Neusis-AI-Org/mcp-project-brain/pkg/translations"
+	"github.com/github/github-mcp-server/pkg/github"
+	"github.com/github/github-mcp-server/pkg/observability"
+	"github.com/github/github-mcp-server/pkg/observability/metrics"
+	"github.com/github/github-mcp-server/pkg/translations"
 	"github.com/stretchr/testify/assert"
 )
 

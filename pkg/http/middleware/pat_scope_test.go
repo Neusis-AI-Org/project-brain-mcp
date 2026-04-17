@@ -8,8 +8,8 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	ghcontext "github.com/Neusis-AI-Org/mcp-project-brain/pkg/context"
-	"github.com/Neusis-AI-Org/mcp-project-brain/pkg/utils"
+	ghcontext "github.com/github/github-mcp-server/pkg/context"
+	"github.com/github/github-mcp-server/pkg/utils"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )

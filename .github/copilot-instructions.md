@@ -47,7 +47,7 @@ If you change any MCP tool definitions or schemas:
 go mod download
 
 # Build the server binary
-go build -v ./cmd/mcp-project-brain
+go build -v ./cmd/github-mcp-server
 
 # Run the server
 ./mcp-project-brain stdio
@@ -66,7 +66,7 @@ go test ./pkg/github -run TestGetMe
 ```
 .
 ├── cmd/
-│   ├── mcp-project-brain/    # Main MCP server entry point (PRIMARY FOCUS)
+│   ├── github-mcp-server/    # Main MCP server entry point (builds binary `mcp-project-brain`)
 │   └── mcpcurl/              # MCP testing utility (secondary - don't break it)
 ├── pkg/                      # Public API packages
 │   ├── github/               # GitHub API MCP tools implementation
@@ -269,7 +269,7 @@ server.json         - MCP server registry metadata
 
 ### Main Entry Point
 
-`cmd/mcp-project-brain/main.go` - Uses cobra for CLI, viper for config, supports:
+`cmd/github-mcp-server/main.go` - Uses cobra for CLI, viper for config, supports:
 - `stdio` command (default) - MCP stdio transport
 - `generate-docs` command - Documentation generation
 - Flags: --toolsets, --read-only, --dynamic-toolsets, --gh-host, --log-file

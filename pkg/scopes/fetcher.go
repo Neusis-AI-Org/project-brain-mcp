@@ -8,8 +8,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/Neusis-AI-Org/mcp-project-brain/pkg/http/headers"
-	"github.com/Neusis-AI-Org/mcp-project-brain/pkg/utils"
+	"github.com/github/github-mcp-server/pkg/http/headers"
+	"github.com/github/github-mcp-server/pkg/utils"
 )
 
 // OAuthScopesHeader is the HTTP response header containing the token's OAuth scopes.

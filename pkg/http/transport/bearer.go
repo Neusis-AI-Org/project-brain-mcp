@@ -4,8 +4,8 @@ import (
 	"net/http"
 	"strings"
 
-	ghcontext "github.com/Neusis-AI-Org/mcp-project-brain/pkg/context"
-	headers "github.com/Neusis-AI-Org/mcp-project-brain/pkg/http/headers"
+	ghcontext "github.com/github/github-mcp-server/pkg/context"
+	headers "github.com/github/github-mcp-server/pkg/http/headers"
 )
 
 type BearerAuthTransport struct {

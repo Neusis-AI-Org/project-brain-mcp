@@ -5,9 +5,9 @@ import (
 	"net/http"
 	"testing"
 
-	"github.com/Neusis-AI-Org/mcp-project-brain/internal/githubv4mock"
-	"github.com/Neusis-AI-Org/mcp-project-brain/internal/toolsnaps"
-	"github.com/Neusis-AI-Org/mcp-project-brain/pkg/translations"
+	"github.com/github/github-mcp-server/internal/githubv4mock"
+	"github.com/github/github-mcp-server/internal/toolsnaps"
+	"github.com/github/github-mcp-server/pkg/translations"
 	"github.com/shurcooL/githubv4"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"

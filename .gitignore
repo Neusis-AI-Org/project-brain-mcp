@@ -1,5 +1,5 @@
 .idea
-cmd/mcp-project-brain/mcp-project-brain
+cmd/github-mcp-server/mcp-project-brain
 
 # VSCode
 .vscode/*

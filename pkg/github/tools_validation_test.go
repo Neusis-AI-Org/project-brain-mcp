@@ -3,7 +3,7 @@ package github
 import (
 	"testing"
 
-	"github.com/Neusis-AI-Org/mcp-project-brain/pkg/inventory"
+	"github.com/github/github-mcp-server/pkg/inventory"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )

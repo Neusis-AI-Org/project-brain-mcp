@@ -1,6 +1,6 @@
 package github
 
-import "github.com/Neusis-AI-Org/mcp-project-brain/pkg/inventory"
+import "github.com/github/github-mcp-server/pkg/inventory"
 
 // Toolset instruction functions - these generate context-aware instructions for each toolset.
 // They are called during inventory build to generate server instructions.

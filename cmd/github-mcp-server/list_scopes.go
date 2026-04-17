@@ -8,9 +8,9 @@ import (
 	"sort"
 	"strings"
 
-	"github.com/Neusis-AI-Org/mcp-project-brain/pkg/github"
-	"github.com/Neusis-AI-Org/mcp-project-brain/pkg/inventory"
-	"github.com/Neusis-AI-Org/mcp-project-brain/pkg/translations"
+	"github.com/github/github-mcp-server/pkg/github"
+	"github.com/github/github-mcp-server/pkg/inventory"
+	"github.com/github/github-mcp-server/pkg/translations"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )

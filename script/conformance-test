@@ -43,13 +43,13 @@ mkdir -p "$REPORT_DIR"/{main,branch,diffs}
 log "${YELLOW}Building binaries...${NC}"
 
 log "Building current branch ($CURRENT_BRANCH)..."
-go build -o "$REPORT_DIR/branch/mcp-project-brain" ./cmd/mcp-project-brain
+go build -o "$REPORT_DIR/branch/mcp-project-brain" ./cmd/github-mcp-server
 BRANCH_BUILD_OK=$?
 
 log "Building main branch (using temp worktree at merge-base)..."
 TEMP_WORKTREE=$(mktemp -d)
 git worktree add --quiet "$TEMP_WORKTREE" "$MERGE_BASE"
-(cd "$TEMP_WORKTREE" && go build -o "$REPORT_DIR/main/mcp-project-brain" ./cmd/mcp-project-brain)
+(cd "$TEMP_WORKTREE" && go build -o "$REPORT_DIR/main/mcp-project-brain" ./cmd/github-mcp-server)
 MAIN_BUILD_OK=$?
 git worktree remove --force "$TEMP_WORKTREE"
 

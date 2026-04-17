@@ -3,7 +3,7 @@ package transport
 import (
 	"net/http"
 
-	"github.com/Neusis-AI-Org/mcp-project-brain/pkg/http/headers"
+	"github.com/github/github-mcp-server/pkg/http/headers"
 )
 
 type UserAgentTransport struct {

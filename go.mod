@@ -1,4 +1,4 @@
-module github.com/Neusis-AI-Org/mcp-project-brain
+module github.com/github/github-mcp-server
 
 go 1.24.0
 

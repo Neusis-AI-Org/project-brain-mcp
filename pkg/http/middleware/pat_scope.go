@@ -4,9 +4,9 @@ import (
 	"log/slog"
 	"net/http"
 
-	ghcontext "github.com/Neusis-AI-Org/mcp-project-brain/pkg/context"
-	"github.com/Neusis-AI-Org/mcp-project-brain/pkg/scopes"
-	"github.com/Neusis-AI-Org/mcp-project-brain/pkg/utils"
+	ghcontext "github.com/github/github-mcp-server/pkg/context"
+	"github.com/github/github-mcp-server/pkg/scopes"
+	"github.com/github/github-mcp-server/pkg/utils"
 )
 
 // WithPATScopes is a middleware that fetches and stores scopes for classic Personal Access Tokens (PATs) in the request context.

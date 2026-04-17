@@ -5,7 +5,7 @@ import (
 	"errors"
 	"log/slog"
 
-	"github.com/Neusis-AI-Org/mcp-project-brain/pkg/observability/metrics"
+	"github.com/github/github-mcp-server/pkg/observability/metrics"
 )
 
 // Exporters bundles observability primitives (logger + metrics) for dependency injection.

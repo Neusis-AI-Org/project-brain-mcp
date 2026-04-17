@@ -1,6 +1,6 @@
 package scopes
 
-import "github.com/Neusis-AI-Org/mcp-project-brain/pkg/inventory"
+import "github.com/github/github-mcp-server/pkg/inventory"
 
 // ToolScopeMap maps tool names to their scope requirements.
 type ToolScopeMap map[string]*ToolScopeInfo

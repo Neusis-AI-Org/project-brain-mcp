@@ -3,8 +3,8 @@ package github
 import (
 	"context"
 
-	"github.com/Neusis-AI-Org/mcp-project-brain/pkg/inventory"
-	"github.com/Neusis-AI-Org/mcp-project-brain/pkg/scopes"
+	"github.com/github/github-mcp-server/pkg/inventory"
+	"github.com/github/github-mcp-server/pkg/scopes"
 )
 
 // repoScopesSet contains scopes that grant access to repository content.

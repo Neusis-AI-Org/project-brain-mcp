@@ -8,11 +8,11 @@ import (
 	"strings"
 	"time"
 
-	gherrors "github.com/Neusis-AI-Org/mcp-project-brain/pkg/errors"
-	"github.com/Neusis-AI-Org/mcp-project-brain/pkg/inventory"
-	"github.com/Neusis-AI-Org/mcp-project-brain/pkg/octicons"
-	"github.com/Neusis-AI-Org/mcp-project-brain/pkg/translations"
-	"github.com/Neusis-AI-Org/mcp-project-brain/pkg/utils"
+	gherrors "github.com/github/github-mcp-server/pkg/errors"
+	"github.com/github/github-mcp-server/pkg/inventory"
+	"github.com/github/github-mcp-server/pkg/octicons"
+	"github.com/github/github-mcp-server/pkg/translations"
+	"github.com/github/github-mcp-server/pkg/utils"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 )
 
@@ -27,7 +27,7 @@ type MCPServerConfig struct {
 	Token string
 
 	// EnabledToolsets is a list of toolsets to enable
-	// See: https://github.com/Neusis-AI-Org/mcp-project-brain?tab=readme-ov-file#tool-configuration
+	// See: https://github.com/github/github-mcp-server?tab=readme-ov-file#tool-configuration
 	EnabledToolsets []string
 
 	// EnabledTools is a list of specific tools to enable (additive to toolsets)
@@ -39,7 +39,7 @@ type MCPServerConfig struct {
 	EnabledFeatures []string
 
 	// Whether to enable dynamic toolsets
-	// See: https://github.com/Neusis-AI-Org/mcp-project-brain?tab=readme-ov-file#dynamic-tool-discovery
+	// See: https://github.com/github/github-mcp-server?tab=readme-ov-file#dynamic-tool-discovery
 	DynamicToolsets bool
 
 	// ReadOnly indicates if we should only offer read-only tools

@@ -7,7 +7,7 @@ import (
 	"strings"
 	"testing"
 
-	ghcontext "github.com/Neusis-AI-Org/mcp-project-brain/pkg/context"
+	ghcontext "github.com/github/github-mcp-server/pkg/context"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )

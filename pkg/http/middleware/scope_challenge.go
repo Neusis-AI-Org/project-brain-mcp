@@ -8,10 +8,10 @@ import (
 	"net/http"
 	"strings"
 
-	ghcontext "github.com/Neusis-AI-Org/mcp-project-brain/pkg/context"
-	"github.com/Neusis-AI-Org/mcp-project-brain/pkg/http/oauth"
-	"github.com/Neusis-AI-Org/mcp-project-brain/pkg/scopes"
-	"github.com/Neusis-AI-Org/mcp-project-brain/pkg/utils"
+	ghcontext "github.com/github/github-mcp-server/pkg/context"
+	"github.com/github/github-mcp-server/pkg/http/oauth"
+	"github.com/github/github-mcp-server/pkg/scopes"
+	"github.com/github/github-mcp-server/pkg/utils"
 )
 
 // WithScopeChallenge creates a new middleware that determines if an OAuth request contains sufficient scopes to

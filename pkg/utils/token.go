@@ -6,8 +6,8 @@ import (
 	"regexp"
 	"strings"
 
-	httpheaders "github.com/Neusis-AI-Org/mcp-project-brain/pkg/http/headers"
-	"github.com/Neusis-AI-Org/mcp-project-brain/pkg/http/mark"
+	httpheaders "github.com/github/github-mcp-server/pkg/http/headers"
+	"github.com/github/github-mcp-server/pkg/http/mark"
 )
 
 type TokenType int

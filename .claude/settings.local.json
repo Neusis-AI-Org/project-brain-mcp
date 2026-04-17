@@ -1,0 +1,11 @@
+{
+  "enabledMcpjsonServers": [
+    "project-brain-mcp"
+  ],
+  "enableAllProjectMcpServers": true,
+  "permissions": {
+    "allow": [
+      "Bash(gcloud config get-value project:*)"
+    ]
+  }
+}
