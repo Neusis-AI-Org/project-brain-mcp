@@ -30,10 +30,16 @@ $Url     = "https://github.com/$Repo/releases/download/v${Version}/${Archive}"
 Write-Host "Downloading $Binary v$Version for Windows/$Arch..."
 New-Item -ItemType Directory -Force -Path $InstallDir | Out-Null
 
-$TmpZip = Join-Path ([System.IO.Path]::GetTempPath()) ([System.IO.Path]::GetRandomFileName() + '.zip')
-Invoke-WebRequest -Uri $Url -OutFile $TmpZip -UseBasicParsing
-Expand-Archive -Path $TmpZip -DestinationPath $InstallDir -Force
-Remove-Item $TmpZip -Force
+$TmpDir = Join-Path ([System.IO.Path]::GetTempPath()) ([System.IO.Path]::GetRandomFileName())
+$TmpZip = "$TmpDir.zip"
+New-Item -ItemType Directory -Force -Path $TmpDir | Out-Null
+try {
+  Invoke-WebRequest -Uri $Url -OutFile $TmpZip -UseBasicParsing
+  Expand-Archive -Path $TmpZip -DestinationPath $TmpDir -Force
+  Move-Item -Path (Join-Path $TmpDir "$Binary.exe") -Destination (Join-Path $InstallDir "$Binary.exe") -Force
+} finally {
+  Remove-Item $TmpZip, $TmpDir -Recurse -Force -ErrorAction SilentlyContinue
+}
 
 Write-Host "Installed: $InstallDir\$Binary.exe"
 
