@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # mcp-project-brain installer for Linux and macOS.
 # Usage:
-#   curl -fsSL https://raw.githubusercontent.com/Neusis-AI-Org/project-brain-mcp/main/install.sh | bash
+#   curl -fsSL https://neusis-ai-org.github.io/project-brain-mcp/install.sh | bash
 # Environment variables:
 #   VERSION      Pin a specific version (default: latest release).
 #   INSTALL_DIR  Install location (default: $HOME/.local/bin).

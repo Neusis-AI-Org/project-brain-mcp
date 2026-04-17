@@ -1,6 +1,6 @@
 # mcp-project-brain installer for Windows.
 # Usage:
-#   iwr -useb https://raw.githubusercontent.com/Neusis-AI-Org/project-brain-mcp/main/install.ps1 | iex
+#   iwr -useb https://neusis-ai-org.github.io/project-brain-mcp/install.ps1 | iex
 # Environment variables:
 #   $env:VERSION      Pin a specific version (default: latest release).
 #   $env:INSTALL_DIR  Install location (default: $env:USERPROFILE\bin).
