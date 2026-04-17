@@ -36,7 +36,7 @@ New-Item -ItemType Directory -Force -Path $TmpDir | Out-Null
 try {
   Invoke-WebRequest -Uri $Url -OutFile $TmpZip -UseBasicParsing
   Expand-Archive -Path $TmpZip -DestinationPath $TmpDir -Force
-  Move-Item -Path (Join-Path $TmpDir "$Binary.exe") -Destination (Join-Path $InstallDir "$Binary.exe") -Force
+  Copy-Item -Path (Join-Path $TmpDir "$Binary.exe") -Destination (Join-Path $InstallDir "$Binary.exe") -Force
 } finally {
   Remove-Item $TmpZip, $TmpDir -Recurse -Force -ErrorAction SilentlyContinue
 }
