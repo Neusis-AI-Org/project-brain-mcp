@@ -3,7 +3,7 @@
     "readOnlyHint": true,
     "title": "Search knowledge base"
   },
-  "description": "Search across knowledge base documents by keyword. Returns matching documents with context lines and frontmatter metadata. Searches within the knowledge base paths defined in AGENTS.md.",
+  "description": "Search the project knowledge base for context relevant to your current task. Use this before making changes to understand prior decisions, existing patterns, and project conventions.",
   "inputSchema": {
     "properties": {
       "path": {

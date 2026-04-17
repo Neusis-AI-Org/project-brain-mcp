@@ -3,7 +3,7 @@
     "readOnlyHint": true,
     "title": "Get knowledge base config"
   },
-  "description": "Read and parse the AGENTS.md knowledge base configuration from a GitHub repository. Call this first to understand the repo's knowledge base structure, rules, and agent permissions before using other KB tools.",
+  "description": "Understand the project's knowledge base structure, available documentation paths, and rules. Call this at the start of a session before using other KB tools — the KB structure varies per project, so always discover it first.",
   "inputSchema": {
     "properties": {
       "ref": {

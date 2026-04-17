@@ -557,7 +557,7 @@ func KBConfigTool(t translations.TranslationHelperFunc) inventory.ServerTool {
 			fileContent, _, resp, err := client.Repositories.GetContents(ctx, owner, repo, "AGENTS.md", opts)
 			if err != nil {
 				if resp != nil && resp.StatusCode == http.StatusNotFound {
-					return utils.NewToolResultError("AGENTS.md not found in repository. Use kb_init to create a knowledge base configuration."), nil, nil
+					return utils.NewToolResultError("AGENTS.md not found in repository. Create an AGENTS.md file in the KB repo root to configure the knowledge base."), nil, nil
 				}
 				return ghErrors.NewGitHubAPIErrorResponse(ctx, "failed to get AGENTS.md", resp, err), nil, nil
 			}

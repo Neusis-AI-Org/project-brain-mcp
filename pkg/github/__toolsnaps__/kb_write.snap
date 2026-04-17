@@ -2,7 +2,7 @@
   "annotations": {
     "title": "Write knowledge base document"
   },
-  "description": "Create or update a knowledge base document in a GitHub repository. Automatically adds YAML frontmatter if not present. Validates the path against AGENTS.md structure rules.",
+  "description": "Contribute to the project knowledge base. After making significant changes — new architecture, patterns, decisions, or resolving complex issues — document the context here so future developers and agents benefit from that knowledge.",
   "inputSchema": {
     "properties": {
       "author": {

@@ -3,7 +3,7 @@
     "readOnlyHint": true,
     "title": "List knowledge base documents"
   },
-  "description": "List knowledge base documents with their frontmatter metadata (title, date, author, tags). Supports filtering by folder, tags, and date range.",
+  "description": "Browse available knowledge base documents to discover what project context exists. Filter by folder or tag to find relevant documentation for your current task.",
   "inputSchema": {
     "properties": {
       "path": {

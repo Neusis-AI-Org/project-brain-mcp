@@ -306,18 +306,3 @@ func Test_KBSearchTool(t *testing.T) {
 	assert.ElementsMatch(t, schema.Required, []string{"query"})
 }
 
-func Test_KBInitTool(t *testing.T) {
-	toolDef := KBInitTool(translations.NullTranslationHelper)
-	require.NoError(t, toolsnaps.Test(toolDef.Tool.Name, toolDef.Tool))
-
-	assert.Equal(t, "kb_init", toolDef.Tool.Name)
-	assert.NotEmpty(t, toolDef.Tool.Description)
-
-	schema, ok := toolDef.Tool.InputSchema.(*jsonschema.Schema)
-	require.True(t, ok)
-	assert.NotContains(t, schema.Properties, "owner")
-	assert.NotContains(t, schema.Properties, "repo")
-	assert.Contains(t, schema.Properties, "directories")
-	assert.Contains(t, schema.Properties, "branch")
-	assert.Nil(t, schema.Required)
-}
