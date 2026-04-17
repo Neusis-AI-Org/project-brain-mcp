@@ -213,9 +213,13 @@ func (h *Handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		invToUse = inv.ForMCPRequest(methodInfo.Method, methodInfo.ItemName)
 	}
 
-	// Extract KB repo from request headers (X-KB-Repo: owner/repo)
+	// Extract KB repo from request context (set by header/path middleware) or server default
 	var kbOwner, kbRepo string
-	if kbRepoFull := ghcontext.GetKBRepo(r.Context()); kbRepoFull != "" {
+	kbRepoFull := ghcontext.GetKBRepo(r.Context())
+	if kbRepoFull == "" {
+		kbRepoFull = h.config.DefaultKBRepo
+	}
+	if kbRepoFull != "" {
 		if parts := strings.SplitN(kbRepoFull, "/", 2); len(parts) == 2 {
 			kbOwner, kbRepo = parts[0], parts[1]
 		}

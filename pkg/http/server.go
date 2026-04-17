@@ -69,6 +69,9 @@ type ServerConfig struct {
 	// ScopeChallenge indicates if we should return OAuth scope challenges, and if we should perform
 	// tool filtering based on token scopes.
 	ScopeChallenge bool
+
+	// DefaultKBRepo is the default KB repo (owner/repo) when not set via X-KB-Repo header.
+	DefaultKBRepo string
 }
 
 func RunHTTPServer(cfg ServerConfig) error {

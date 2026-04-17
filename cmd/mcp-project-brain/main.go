@@ -131,6 +131,7 @@ var (
 				LockdownMode:         viper.GetBool("lockdown-mode"),
 				RepoAccessCacheTTL:   &ttl,
 				ScopeChallenge:       viper.GetBool("scope-challenge"),
+				DefaultKBRepo:        viper.GetString("kb-repo"),
 			}
 
 			return ghhttp.RunHTTPServer(httpConfig)

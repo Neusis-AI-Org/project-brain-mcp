@@ -21,6 +21,8 @@ bin/
 /mcp-project-brain.exe
 mcpcurl
 e2e.test
+*.exe
+*.exe~
 
 .history
 conformance-report/
