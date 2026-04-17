@@ -1,13 +1,16 @@
 {
-  "mcpServers": {
+  "$schema": "https://opencode.ai/config.json",
+  "mcp": {
     "project-brain": {
-      "command": "mcp-project-brain",
-      "args": [
+      "type": "local",
+      "command": [
+        "mcp-project-brain",
         "stdio",
-        "--kb-repo=Neusis-AI-Org/project-brain-mcp"
+        "--kb-repo=YOUR-ORG/YOUR-REPO"
       ],
-      "env": {
-        "GITHUB_PERSONAL_ACCESS_TOKEN": "${GITHUB_PERSONAL_ACCESS_TOKEN}"
+      "enabled": true,
+      "environment": {
+        "GITHUB_PERSONAL_ACCESS_TOKEN": "{env:GITHUB_PERSONAL_ACCESS_TOKEN}"
       }
     }
   }

@@ -76,7 +76,37 @@ Restart your terminal.
 
 ## Configure your MCP client
 
-Drop this into your MCP client config (e.g. `.mcp.json` for Claude Code, `.cursor/mcp.json` for Cursor, or the file your tool reads). **Replace `YOUR-ORG/YOUR-REPO` with the repo you want the assistant to operate on.**
+**Replace `YOUR-ORG/YOUR-REPO` with the repo you want the assistant to operate on.** The `--kb-repo` value is required — it tells the server which repo to operate on and the assistant is informed about this repo in its session instructions.
+
+### neusiscode / OpenCode
+
+File: `neusiscode.json` (or `opencode.json`) at the project root.
+
+```json
+{
+  "$schema": "https://opencode.ai/config.json",
+  "mcp": {
+    "project-brain": {
+      "type": "local",
+      "command": [
+        "mcp-project-brain",
+        "stdio",
+        "--kb-repo=YOUR-ORG/YOUR-REPO"
+      ],
+      "enabled": true,
+      "environment": {
+        "GITHUB_PERSONAL_ACCESS_TOKEN": "{env:GITHUB_PERSONAL_ACCESS_TOKEN}"
+      }
+    }
+  }
+}
+```
+
+> A ready-to-edit `neusiscode.json` is shipped in the repo root.
+
+### Claude Code / Cursor / generic MCP
+
+File: `.mcp.json` (Claude Code) or `.cursor/mcp.json` (Cursor) at the project root.
 
 ```json
 {
@@ -94,10 +124,6 @@ Drop this into your MCP client config (e.g. `.mcp.json` for Claude Code, `.curso
   }
 }
 ```
-
-The `--kb-repo` value is **required** — it tells the server which repo to operate on, and the assistant is informed about this repo in its session instructions.
-
-> A sample config is included in the repo as `neusiscode.json`.
 
 ---
 
