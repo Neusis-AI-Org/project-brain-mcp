@@ -36,7 +36,8 @@ pkg/github/ui_dist/*
 !pkg/github/ui_dist/.gitkeep
 !pkg/github/ui_dist/.placeholder.html
 
-# OpenCode
+# neusiscode
+.neusiscode/
 .opencode/
 
 # Claude Code local settings
@@ -44,4 +45,5 @@ pkg/github/ui_dist/*
 
 # MCP client configs (may contain tokens/secrets)
 .mcp.json
+neusiscode.json
 opencode.json

@@ -54,3 +54,51 @@ case ":$PATH:" in
     echo "  export PATH=\"$INSTALL_DIR:\$PATH\""
     ;;
 esac
+
+echo
+echo "GitHub token setup ----------------------------------------------"
+echo
+
+if [ -n "${GITHUB_PERSONAL_ACCESS_TOKEN:-}" ]; then
+  echo "GITHUB_PERSONAL_ACCESS_TOKEN is already set in this shell. Skipping prompt."
+else
+  echo "Create a fine-grained GitHub personal access token with read access to"
+  echo "the knowledge base repository you will use:"
+  echo "  https://github.com/settings/personal-access-tokens/new"
+  echo
+
+  # Pick the user's shell rc file
+  case "${SHELL:-}" in
+    *zsh)  RC_FILE="$HOME/.zshrc" ;;
+    *bash) RC_FILE="$HOME/.bashrc" ;;
+    *)     RC_FILE="$HOME/.profile" ;;
+  esac
+
+  # Read from /dev/tty so it works even when piped via `curl | bash`
+  if [ -r /dev/tty ]; then
+    printf "Paste your token now (or press Enter to skip): "
+    read -r TOKEN < /dev/tty || TOKEN=""
+    if [ -n "$TOKEN" ]; then
+      # Guard against duplicate entries
+      if ! grep -q "GITHUB_PERSONAL_ACCESS_TOKEN" "$RC_FILE" 2>/dev/null; then
+        printf '\nexport GITHUB_PERSONAL_ACCESS_TOKEN="%s"\n' "$TOKEN" >> "$RC_FILE"
+        echo "Appended export to $RC_FILE."
+        echo "Reload your shell:  source $RC_FILE"
+      else
+        echo "A GITHUB_PERSONAL_ACCESS_TOKEN entry already exists in $RC_FILE — leaving it alone."
+        echo "Edit $RC_FILE manually if you want to replace the value."
+      fi
+    else
+      echo "Skipped. Add this line to $RC_FILE when ready:"
+      echo '  export GITHUB_PERSONAL_ACCESS_TOKEN="<token>"'
+    fi
+  else
+    echo "Non-interactive shell detected. Add this line to $RC_FILE:"
+    echo '  export GITHUB_PERSONAL_ACCESS_TOKEN="<token>"'
+  fi
+fi
+
+echo
+echo "Reference the env var in your MCP config, e.g. neusiscode.json:"
+echo '  "environment": { "GITHUB_PERSONAL_ACCESS_TOKEN": "{env:GITHUB_PERSONAL_ACCESS_TOKEN}" }'
+echo

@@ -78,9 +78,9 @@ Restart your terminal.
 
 **Replace `YOUR-ORG/YOUR-REPO` with the repo you want the assistant to operate on.** The `--kb-repo` value is required — it tells the server which repo to operate on and the assistant is informed about this repo in its session instructions.
 
-### neusiscode / OpenCode
+### neusiscode
 
-File: `neusiscode.json` (or `opencode.json`) at the project root.
+File: `neusiscode.json` at the project root.
 
 ```json
 {

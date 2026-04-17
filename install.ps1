@@ -50,3 +50,37 @@ if ($UserPath -notlike "*$InstallDir*") {
   [Environment]::SetEnvironmentVariable('Path', "$UserPath;$InstallDir", 'User')
   Write-Host "Restart your terminal for PATH changes to take effect."
 }
+
+Write-Host ""
+Write-Host "GitHub token setup ----------------------------------------------"
+Write-Host ""
+
+$ExistingToken = [Environment]::GetEnvironmentVariable('GITHUB_PERSONAL_ACCESS_TOKEN','User')
+if ($ExistingToken) {
+  Write-Host "GITHUB_PERSONAL_ACCESS_TOKEN is already set in your user environment. Skipping."
+} else {
+  Write-Host "Create a fine-grained GitHub personal access token with read access to"
+  Write-Host "the knowledge base repository you will use:"
+  Write-Host "  https://github.com/settings/personal-access-tokens/new"
+  Write-Host ""
+  $IsInteractive = [Environment]::UserInteractive -and -not [Console]::IsInputRedirected
+  if ($IsInteractive) {
+    $Token = Read-Host "Paste your token now (or press Enter to skip)"
+    if ($Token) {
+      [Environment]::SetEnvironmentVariable('GITHUB_PERSONAL_ACCESS_TOKEN', $Token, 'User')
+      Write-Host "Saved as user environment variable GITHUB_PERSONAL_ACCESS_TOKEN."
+      Write-Host "Open a new terminal so the variable becomes visible."
+    } else {
+      Write-Host "Skipped. Set it later with:"
+      Write-Host "  [Environment]::SetEnvironmentVariable('GITHUB_PERSONAL_ACCESS_TOKEN','<token>','User')"
+    }
+  } else {
+    Write-Host "Non-interactive shell detected. Set the token later with:"
+    Write-Host "  [Environment]::SetEnvironmentVariable('GITHUB_PERSONAL_ACCESS_TOKEN','<token>','User')"
+  }
+}
+
+Write-Host ""
+Write-Host "Reference the env var in your MCP config, e.g. neusiscode.json:"
+Write-Host '  "environment": { "GITHUB_PERSONAL_ACCESS_TOKEN": "{env:GITHUB_PERSONAL_ACCESS_TOKEN}" }'
+Write-Host ""
