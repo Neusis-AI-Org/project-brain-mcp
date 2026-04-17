@@ -263,7 +263,6 @@ LICENSE             - MIT license
 README.md           - Main documentation (auto-generated sections)
 SECURITY.md         - Security policy
 SUPPORT.md          - Support resources
-gemini-extension.json - Gemini CLI configuration
 go.mod / go.sum     - Go dependencies
 server.json         - MCP server registry metadata
 ```
