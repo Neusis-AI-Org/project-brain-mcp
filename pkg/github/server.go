@@ -86,8 +86,13 @@ type MCPServerOption func(*mcp.ServerOptions)
 
 func NewMCPServer(ctx context.Context, cfg *MCPServerConfig, deps ToolDependencies, inv *inventory.Inventory, middleware ...mcp.Middleware) (*mcp.Server, error) {
 	// Create the MCP server
+	instructions := inv.Instructions()
+	if cfg.KBOwner != "" && cfg.KBRepo != "" {
+		projectContext := fmt.Sprintf("Project context: You are working on the GitHub repository %s/%s. Its knowledge base is stored in AGENTS.md in that repo. Always call kb_config first to discover the project's structure, rules, and documentation layout before answering questions or making changes.\n\n", cfg.KBOwner, cfg.KBRepo)
+		instructions = projectContext + instructions
+	}
 	serverOpts := &mcp.ServerOptions{
-		Instructions:      inv.Instructions(),
+		Instructions:      instructions,
 		Logger:            cfg.Logger,
 		CompletionHandler: CompletionsHandler(deps.GetClient),
 	}

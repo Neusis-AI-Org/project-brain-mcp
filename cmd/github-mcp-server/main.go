@@ -8,7 +8,6 @@ import (
 	"time"
 
 	"github.com/github/github-mcp-server/internal/ghmcp"
-	"github.com/github/github-mcp-server/pkg/github"
 	ghhttp "github.com/github/github-mcp-server/pkg/http"
 	"github.com/spf13/cobra"
 	"github.com/spf13/pflag"
@@ -19,6 +18,11 @@ import (
 var version = "version"
 var commit = "commit"
 var date = "date"
+
+// lockedToolsets is the fixed set of toolsets this binary exposes.
+// User-provided --toolsets/--tools/--exclude-tools flags are ignored so that
+// users cannot accidentally enable other GitHub tools on top of the knowledge base.
+var lockedToolsets = []string{"knowledge_base"}
 
 var (
 	rootCmd = &cobra.Command{
@@ -38,38 +42,7 @@ var (
 				return errors.New("GITHUB_PERSONAL_ACCESS_TOKEN not set")
 			}
 
-			// If you're wondering why we're not using viper.GetStringSlice("toolsets"),
-			// it's because viper doesn't handle comma-separated values correctly for env
-			// vars when using GetStringSlice.
-			// https://github.com/spf13/viper/issues/380
-			//
-			// Additionally, viper.UnmarshalKey returns an empty slice even when the flag
-			// is not set, but we need nil to indicate "use defaults". So we check IsSet first.
-			var enabledToolsets []string
-			if viper.IsSet("toolsets") {
-				if err := viper.UnmarshalKey("toolsets", &enabledToolsets); err != nil {
-					return fmt.Errorf("failed to unmarshal toolsets: %w", err)
-				}
-			}
-			// else: enabledToolsets stays nil, meaning "use defaults"
-
-			// Parse tools (similar to toolsets)
-			var enabledTools []string
-			if viper.IsSet("tools") {
-				if err := viper.UnmarshalKey("tools", &enabledTools); err != nil {
-					return fmt.Errorf("failed to unmarshal tools: %w", err)
-				}
-			}
-
-			// Parse excluded tools (similar to tools)
-			var excludeTools []string
-			if viper.IsSet("exclude_tools") {
-				if err := viper.UnmarshalKey("exclude_tools", &excludeTools); err != nil {
-					return fmt.Errorf("failed to unmarshal exclude-tools: %w", err)
-				}
-			}
-
-			// Parse enabled features (similar to toolsets)
+			// Parse enabled features
 			var enabledFeatures []string
 			if viper.IsSet("features") {
 				if err := viper.UnmarshalKey("features", &enabledFeatures); err != nil {
@@ -87,15 +60,17 @@ var (
 				kbOwner, kbRepo = parts[0], parts[1]
 			}
 
+			if kbOwner == "" || kbRepo == "" {
+				return errors.New("--kb-repo is required (format: owner/repo). This sets the project repo the MCP server operates on")
+			}
+
 			ttl := viper.GetDuration("repo-access-cache-ttl")
 			stdioServerConfig := ghmcp.StdioServerConfig{
 				Version:              version,
 				Host:                 viper.GetString("host"),
 				Token:                token,
-				EnabledToolsets:      enabledToolsets,
-				EnabledTools:         enabledTools,
+				EnabledToolsets:      lockedToolsets,
 				EnabledFeatures:      enabledFeatures,
-				DynamicToolsets:      viper.GetBool("dynamic_toolsets"),
 				ReadOnly:             viper.GetBool("read-only"),
 				ExportTranslations:   viper.GetBool("export-translations"),
 				EnableCommandLogging: viper.GetBool("enable-command-logging"),
@@ -103,7 +78,6 @@ var (
 				ContentWindowSize:    viper.GetInt("content-window-size"),
 				LockdownMode:         viper.GetBool("lockdown-mode"),
 				InsidersMode:         viper.GetBool("insiders"),
-				ExcludeTools:         excludeTools,
 				RepoAccessCacheTTL:   &ttl,
 				KBOwner:              kbOwner,
 				KBRepo:               kbRepo,
@@ -117,28 +91,6 @@ var (
 		Short: "Start HTTP server",
 		Long:  `Start an HTTP server that listens for MCP requests over HTTP.`,
 		RunE: func(_ *cobra.Command, _ []string) error {
-			// Parse toolsets (same approach as stdio — see comment there)
-			var enabledToolsets []string
-			if viper.IsSet("toolsets") {
-				if err := viper.UnmarshalKey("toolsets", &enabledToolsets); err != nil {
-					return fmt.Errorf("failed to unmarshal toolsets: %w", err)
-				}
-			}
-
-			var enabledTools []string
-			if viper.IsSet("tools") {
-				if err := viper.UnmarshalKey("tools", &enabledTools); err != nil {
-					return fmt.Errorf("failed to unmarshal tools: %w", err)
-				}
-			}
-
-			var excludeTools []string
-			if viper.IsSet("exclude_tools") {
-				if err := viper.UnmarshalKey("exclude_tools", &excludeTools); err != nil {
-					return fmt.Errorf("failed to unmarshal exclude-tools: %w", err)
-				}
-			}
-
 			ttl := viper.GetDuration("repo-access-cache-ttl")
 			httpConfig := ghhttp.ServerConfig{
 				Version:              version,
@@ -155,10 +107,7 @@ var (
 				ScopeChallenge:       viper.GetBool("scope-challenge"),
 				DefaultKBRepo:        viper.GetString("kb-repo"),
 				ReadOnly:             viper.GetBool("read-only"),
-				EnabledToolsets:      enabledToolsets,
-				EnabledTools:         enabledTools,
-				DynamicToolsets:      viper.GetBool("dynamic_toolsets"),
-				ExcludeTools:         excludeTools,
+				EnabledToolsets:      lockedToolsets,
 				InsidersMode:         viper.GetBool("insiders"),
 			}
 
@@ -174,11 +123,7 @@ func init() {
 	rootCmd.SetVersionTemplate("{{.Short}}\n{{.Version}}\n")
 
 	// Add global flags that will be shared by all commands
-	rootCmd.PersistentFlags().StringSlice("toolsets", nil, github.GenerateToolsetsHelp())
-	rootCmd.PersistentFlags().StringSlice("tools", nil, "Comma-separated list of specific tools to enable")
-	rootCmd.PersistentFlags().StringSlice("exclude-tools", nil, "Comma-separated list of tool names to disable regardless of other settings")
 	rootCmd.PersistentFlags().StringSlice("features", nil, "Comma-separated list of feature flags to enable")
-	rootCmd.PersistentFlags().Bool("dynamic-toolsets", false, "Enable dynamic toolsets")
 	rootCmd.PersistentFlags().Bool("read-only", false, "Restrict the server to read-only operations")
 	rootCmd.PersistentFlags().String("log-file", "", "Path to log file")
 	rootCmd.PersistentFlags().Bool("enable-command-logging", false, "When enabled, the server will log all command requests and responses to the log file")
@@ -197,11 +142,7 @@ func init() {
 	httpCmd.Flags().Bool("scope-challenge", false, "Enable OAuth scope challenge responses")
 
 	// Bind flag to viper
-	_ = viper.BindPFlag("toolsets", rootCmd.PersistentFlags().Lookup("toolsets"))
-	_ = viper.BindPFlag("tools", rootCmd.PersistentFlags().Lookup("tools"))
-	_ = viper.BindPFlag("exclude_tools", rootCmd.PersistentFlags().Lookup("exclude-tools"))
 	_ = viper.BindPFlag("features", rootCmd.PersistentFlags().Lookup("features"))
-	_ = viper.BindPFlag("dynamic_toolsets", rootCmd.PersistentFlags().Lookup("dynamic-toolsets"))
 	_ = viper.BindPFlag("read-only", rootCmd.PersistentFlags().Lookup("read-only"))
 	_ = viper.BindPFlag("log-file", rootCmd.PersistentFlags().Lookup("log-file"))
 	_ = viper.BindPFlag("enable-command-logging", rootCmd.PersistentFlags().Lookup("enable-command-logging"))
